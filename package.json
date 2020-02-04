@@ -1,0 +1,49 @@
+{
+  "name": "jira-lint",
+  "version": "0.0.1",
+  "description": "Add JIRA issue details to your GitHub pull request",
+  "main": "lib/index.js",
+  "scripts": {
+    "build": "ncc build src/main.ts -o lib",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "docs:toc": "markdown-toc -i --bullets='-' README.md"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cleartax/jira-lint"
+  },
+  "keywords": [
+    "actions",
+    "node",
+    "setup"
+  ],
+  "author": "cleartax",
+  "license": "MIT",
+  "husky": {
+    "hooks": {
+      "pre-push": "./scripts/pre-push.sh",
+      "pre-commit": "./scripts/pre-commit.sh"
+    }
+  },
+  "dependencies": {
+    "@actions/core": "^1.0.0",
+    "@actions/github": "^1.1.0",
+    "axios": "^0.19.0",
+    "string-similarity": "^3.0.0"
+  },
+  "devDependencies": {
+    "@types/jest": "^24.0.18",
+    "@types/lodash": "^4.14.149",
+    "@types/node": "^12.7.5",
+    "@types/string-similarity": "^3.0.0",
+    "@zeit/ncc": "^0.20.5",
+    "husky": "^3.0.5",
+    "jest": "^24.8.0",
+    "jest-circus": "^24.7.1",
+    "lodash": "^4.17.15",
+    "markdown-toc": "^1.2.0",
+    "ts-jest": "^24.1.0",
+    "typescript": "^3.6.3"
+  }
+}
