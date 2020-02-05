@@ -263,7 +263,7 @@ export const getLabelsForDisplay = (labels: JIRADetails['labels']): string => {
   if (!labels || !labels.length) {
     return '-';
   }
-  const markUp = labels.map(label => `<a href="${label.url} title="${label.name}">${label.name}</a>`).join(', ');
+  const markUp = labels.map(label => `<a href="${label.url}" title="${label.name}">${label.name}</a>`).join(', ');
   return markUp.replace(/\s+/, ' ');
 }
 
