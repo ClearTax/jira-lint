@@ -8,7 +8,6 @@ import {
   getHugePrComment,
   getNoIdComment,
   shouldAddComments,
-  filterArray,
   getHotfixLabel,
 } from '../src/utils';
 import { HIDDEN_MARKER } from '../src/constants';
