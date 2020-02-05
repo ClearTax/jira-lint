@@ -106,7 +106,8 @@ async function run() {
       process.exit(1);
     }
 
-    const issueKey = issueKeys[0];
+    // use the last match (end of the branch name)
+    const issueKey = issueKeys[issueKeys.length - 1];
     console.log(`JIRA key -> ${issueKey}`)
 
     const { getTicketDetails } = getJIRAClient(JIRA_BASE_URL, JIRA_TOKEN);
