@@ -74,7 +74,7 @@ export const getJIRAClient = (baseURL: string, token: string) => {
   /**
    * Get required details to display in PR
    */
-  const getDetails = async (key: string) => {
+  const getTicketDetails = async (key: string) => {
     try {
       const issue: JIRA.Issue = await getIssue(key);
       const {
@@ -111,7 +111,7 @@ export const getJIRAClient = (baseURL: string, token: string) => {
 
   return {
     client,
-    getDetails,
+    getTicketDetails,
     getIssue,
   };
 };

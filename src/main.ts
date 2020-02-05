@@ -35,7 +35,7 @@ const getInputs = () => {
     BRANCH_IGNORE_PATTERN,
     SKIP_COMMENTS,
     PR_THRESHOLD,
-    JIRA_BASE_URL: JIRA_BASE_URL.endsWith('/') ? JIRA_BASE_URL.replace(/\/$/,'') : JIRA_BASE_URL,
+    JIRA_BASE_URL: JIRA_BASE_URL.endsWith('/') ? JIRA_BASE_URL.replace(/\/$/, '') : JIRA_BASE_URL,
   };
 };
 
@@ -106,10 +106,9 @@ async function run() {
       process.exit(1);
     }
 
-    const { getDetails } = getJIRAClient(JIRA_BASE_URL, JIRA_TOKEN);
-    const details: JIRADetails = await getDetails(issueKeys[0]);
+    const { getTicketDetails } = getJIRAClient(JIRA_BASE_URL, JIRA_TOKEN);
+    const details: JIRADetails = await getTicketDetails(issueKeys[0]);
     if (details.key) {
-
       const podLabel = details?.project?.name || '';
       const hotfixLabel: string = getHotfixLabel(baseBranch);
       const typeLabel: string = details?.type?.name || '';
