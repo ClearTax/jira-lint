@@ -84,7 +84,7 @@ export const getJIRAClient = (baseURL: string, token: string) => {
       const labels = rawLabels.map(label => ({
         name: label,
         url: `${baseURL}/issues?jql=${encodeURIComponent(
-          `project = ${project.key} AND labels = ${label} order by created DESC`
+          `project = ${project.key} AND labels = ${label} ORDER BY created DESC`
         )}`,
       }));
 
