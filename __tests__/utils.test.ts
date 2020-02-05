@@ -1,14 +1,15 @@
 import {
-  shouldSkipBranchLint,
+  getHotfixLabel,
+  getHugePrComment,
   getJIRAIssueKeys,
-  LABELS,
-  shouldUpdatePRDescription,
+  getLabelsForDisplay,
+  getNoIdComment,
   getPRDescription,
   isHumongousPR,
-  getHugePrComment,
-  getNoIdComment,
+  LABELS,
   shouldAddComments,
-  getHotfixLabel,
+  shouldSkipBranchLint,
+  shouldUpdatePRDescription,
 } from '../src/utils';
 import { HIDDEN_MARKER } from '../src/constants';
 import { JIRADetails } from '../src/types';
@@ -203,4 +204,13 @@ describe('getHugePrComment()', () => {
     expect(getHugePrComment(1000, 800)).toContain(1000);
     expect(getHugePrComment(1000, 800)).toContain(800);
   });
+});
+
+describe('getLabelsForDisplay()', () => {
+  it('generates label markup without spaces', () => {
+    expect(getLabelsForDisplay([
+      { name: 'one', url: 'url-one' },
+      { name: 'two', url: 'url-two' },
+    ])).toBe(`<a href="url-one title="one">one</a>, <a href="url-two title="two">two</a>`);
+  })
 });
