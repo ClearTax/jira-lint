@@ -10,6 +10,7 @@ import {
   shouldAddComments,
   shouldSkipBranchLint,
   shouldUpdatePRDescription,
+  getJIRAClient,
 } from '../src/utils';
 import { HIDDEN_MARKER } from '../src/constants';
 import { JIRADetails } from '../src/types';
@@ -211,6 +212,13 @@ describe('getLabelsForDisplay()', () => {
     expect(getLabelsForDisplay([
       { name: 'one', url: 'url-one' },
       { name: 'two', url: 'url-two' },
-    ])).toBe(`<a href="url-one title="one">one</a>, <a href="url-two title="two">two</a>`);
+    ])).toBe(`<a href=\"url-one\" title=\"one\">one</a>, <a href=\"url-two\" title=\"two\">two</a>`);
   })
+
+  it.skip('should be able to access the issue', async () => {
+    const client = getJIRAClient('https://cleartaxtech.atlassian.net/', '<token_here>');
+    const details = await client.getTicketDetails('ES-10');
+    console.log({ details });
+    expect(details).not.toBeNull();
+  });
 });
