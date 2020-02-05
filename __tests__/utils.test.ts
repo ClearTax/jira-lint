@@ -214,7 +214,10 @@ describe('getLabelsForDisplay()', () => {
       { name: 'two', url: 'url-two' },
     ])).toBe(`<a href=\"url-one\" title=\"one\">one</a>, <a href=\"url-two\" title=\"two\">two</a>`);
   })
+});
 
+describe('JIRA Client', () => {
+  // use this to test if the token is correct
   it.skip('should be able to access the issue', async () => {
     const client = getJIRAClient('https://cleartaxtech.atlassian.net/', '<token_here>');
     const details = await client.getTicketDetails('ES-10');
