@@ -1,117 +1,169 @@
-<p align="center">
-  <a href="https://github.com/actions/typescript-action/actions"><img alt="typescript-action status" src="https://github.com/actions/typescript-action/workflows/build-test/badge.svg"></a>
-</p>
+# Jira-lint 🧹
 
-# Create a JavaScript Action using TypeScript
+> A light-weight lint workflow when using GitHub along with [JIRA][jira] for project management.
 
-Use this template to bootstrap the creation of a JavaScript action.:rocket:
+![GitHub package.json version](https://img.shields.io/github/package-json/v/cleartax/jira-lint?style=flat-square)
+[![GitHub](https://img.shields.io/github/license/cleartax/jira-lint?style=flat-square)](https://github.com/cleartax/jira-lint/blob/master/LICENSE.md)
 
-This template includes compilication support, tests, a validation workflow, publishing, and versioning guidance.  
+<!-- toc -->
 
-If you are new, there's also a simpler introduction.  See the [Hello World JavaScript Action](https://github.com/actions/hello-world-javascript-action)
+- [Jira-lint 🧹](#jira-lint-%f0%9f%a7%b9)
+  - [Installation](#installation)
+    - [Semantic Versions](#semantic-versions)
+  - [Features](#features)
+    - [PR Status Checks](#pr-status-checks)
+    - [PR Description & Labels](#pr-description--labels)
+      - [Description](#description)
+      - [Labels](#labels)
+      - [Soft-validations via comments](#soft-validations-via-comments)
+    - [Options](#options)
+    - [Skipping branches](#skipping-branches)
+  - [Contributing](#contributing)
+  - [FAQ](#faq)
 
-## Create an action from this template
+<!-- tocstop -->
 
-Click the `Use this Template` and provide the new repo details for your action
+## Installation
 
-## Code in Master
+To make `jira-lint` a part of your workflow, just add a `jira-lint.yml` file in your `.github/workflows/` directory in your GitHub repository.
 
-Install the dependencies  
-```bash
-$ npm install
+```yml
+name: jira-lint
+on: [pull_request]
+
+jobs:
+  jira-lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: cleartax/jira-lint@master
+        name: jira-lint
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          jira-token: ${{ secrets.JIRA_TOKEN }}
+          jira-token: https://your-domain.atlassian.net
+          skip-branches: '^(production-release|master|release\/v\d+)$'
+          skip-comments: true
+          pr-threshold: 1000
 ```
 
-Build the typescript
-```bash
-$ npm run build
-```
+It can also be used as part of an existing workflow by adding it as a step. More information about the [options here](#options).
 
-Run the tests :heavy_check_mark:  
-```bash
-$ npm test
+### Semantic Versions
 
- PASS  ./index.test.js
-  ✓ throws invalid number (3ms)
-  ✓ wait 500 ms (504ms)
-  ✓ test runs (95ms)
+If you want more stability in versions of `jira-lint` than `@master` you can also use the [semantic releases for jira-lint](https://github.com/cleartax/jira-lint/releases).
 
-...
-```
-
-## Change action.yml
-
-The action.yml contains defines the inputs and output for your action.
-
-Update the action.yml with your name, description, inputs and outputs for your action.
-
-See the [documentation](https://help.github.com/en/articles/metadata-syntax-for-github-actions)
-
-## Change the Code
-
-Most toolkit and CI/CD operations involve async operations so the action is run in an async function.
-
-```javascript
-import * as core from '@actions/core';
-...
-
-async function run() {
-  try { 
-      ...
-  } 
-  catch (error) {
-    core.setFailed(error.message);
-  }
-}
-
-run()
-```
-
-See the [toolkit documentation](https://github.com/actions/toolkit/blob/master/README.md#packages) for the various packages.
-
-## Publish to a distribution branch
-
-Actions are run from GitHub repos.  We will create a releases branch and only checkin production modules (core in this case). 
-
-Comment out node_modules in .gitignore and create a releases/v1 branch
-```bash
-# comment out in distribution branches
-# node_modules/
-```
-
-```bash
-$ git checkout -b releases/v1
-$ git commit -a -m "prod dependencies"
-```
-
-```bash
-$ npm prune --production
-$ git add node_modules
-$ git commit -a -m "prod dependencies"
-$ git push origin releases/v1
-```
-
-Your action is now published! :rocket: 
-
-See the [versioning documentation](https://github.com/actions/toolkit/blob/master/docs/action-versioning.md)
-
-## Validate
-
-You can now validate the action by referencing the releases/v1 branch
+Example:
 
 ```yaml
-uses: actions/typescript-action@releases/v1
-with:
-  milliseconds: 1000
+# ...
+steps:
+  - uses: cleartax/jira-lint@v0.0.1
+    name: jira-lint
+    # ...
 ```
 
-See the [actions tab](https://github.com/actions/javascript-action/actions) for runs of this action! :rocket:
+## Features
 
-## Usage:
+### PR Status Checks
 
-After testing you can [create a v1 tag](https://github.com/actions/toolkit/blob/master/docs/action-versioning.md) to reference the stable and tested action
+`jira-lint` adds a status check which helps you avoid merging PRs which are missing a valid story ID in the branch name. It will use the [JIRA API](https://developer.atlassian.com/cloud/jira/platform/rest/v3/) to validate a given story id.
 
-```yaml
-uses: actions/typescript-action@v1
-with:
-  milliseconds: 1000
-```
+### PR Description & Labels
+
+#### Description
+
+When a PR passes the above check, `jira-lint` will also add the story details to the top of the PR description. It will pick details such as the story title, type, points and labels and add them to the PR description.
+
+#### Labels
+
+`jira-lint` will automatically label PRs with:
+
+- A _team name_ label based on the Jira Project name (the project the story belongs to). For example, if your project name is `Escher POD` then it will add `escher` as a label.
+- `HOTFIX-PROD` - if the PR is raised against `production-release`.
+- `HOTFIX-PRE-PROD` - if the PR is raised against `release/v*`.
+- Jira story type (_feature_, _task_, _bug_).
+
+<figure>
+ <img src="https://assets1.cleartax-cdn.com/cleargst-frontend/misc/1580891341_jira_lint.png" alt="Story details and labels added to a PR" />
+ <figcaption>
+ Story details and labels added to a PR.
+ </figcaption>
+</figure>
+
+#### Soft-validations via comments
+
+`jira-lint` will add comments to a PR to encourage better PR practices:
+
+**A good PR title**
+
+<figure>
+  <img src="https://user-images.githubusercontent.com/6426069/69525276-c6e62b80-0f8d-11ea-9db4-23d524b5276c.png" />
+  <figcaption>When the title of the PR matches the title of the story well.</figcaption>
+</figure>
+
+---
+
+<figure>
+  <img src="https://user-images.githubusercontent.com/6426069/69480647-6a6cfa00-0e2f-11ea-8750-4294f686dac7.png" />
+  <figcaption>When the title of the PR is <strong>slightly different</strong> compared to the title of the story</figcaption>
+</figure>
+
+---
+
+<figure>
+  <img src="https://user-images.githubusercontent.com/6426069/69526103-7243b000-0f8f-11ea-9deb-acb8cbb6610b.png" />
+  <figcaption>When the title of the PR is <strong>very different</strong>  compared to the title of the story</figcaption>
+</figure>
+
+---
+
+**A comment discouraging PRs which are too large (based on number of lines of code changed).**
+
+<figure>
+  <img src="https://user-images.githubusercontent.com/6426069/69480043-e06e6280-0e29-11ea-8e24-173355c304dd.png" />
+  <figcaption>Batman says no large PRs 🦇</figcaption>
+</figure>
+
+### Options
+
+| key             | description                                                                                                                                                                                                                                                                                                        | required | default |
+| --------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | -------- | ------- |
+| `github-token`  | Token used to update PR description. `GITHUB_TOKEN` is already available [when you use GitHub actions](https://help.github.com/en/actions/automating-your-workflow-with-github-actions/authenticating-with-the-github_token#about-the-github_token-secret), so all that is required is to pass it as a param here. | true     | null    |
+| `jira-token`    | API Token used to fetch Jira Story information. Must have read access to your Jira projects. Check [here](https://confluence.atlassian.com/cloud/api-tokens-938839638.html) on how to get a Jira API Token                                                                                                         | true     | null    |
+| `jira-base-url` | The subdomain of JIRA cloud that you use to access it. Ex: "https://your-domain.atlassian.net".                                                                                                                                                                                                                    | true     | null    |
+| `skip-branches` | A regex to ignore running `jira-lint` on certain branches, like production etc.                                                                                                                                                                                                                                    | false    | ' '     |
+| `skip-comments` | A `Boolean` if set to `true` then `jira-lint` will skip adding lint comments for PR title.                                                                                                                                                                                                                         | false    | false   |
+| `pr-threshold`  | An `Integer` based on which `jira-lint` will add a comment discouraging huge PRs.                                                                                                                                                                                                                                  | false    | 800     |
+
+Since tokens are private, we suggest adding them as [GitHub secrets](https://help.github.com/en/actions/automating-your-workflow-with-github-actions/creating-and-using-encrypted-secrets).
+
+### Skipping branches
+
+Since GitHub actions take string inputs, `skip-branches` must be a regex which will work for all sets of branches you want to ignore. This is useful for merging protected/default branches into other branches. Check out some [examples in the tests](https://github.com/ClearTax/jira-lint/blob/08a47ab7a6e2bc235c9e34da1d14eacf9d810bd1/__tests__/utils.test.ts#L33-L44).
+
+`jira-lint` already skips PRs which are filed by bots (for eg. [dependabot](https://github.com/marketplace/dependabot-preview)). You can add more bots to [this list](https://github.com/ClearTax/jira-lint/blob/08a47ab7a6e2bc235c9e34da1d14eacf9d810bd1/src/constants.ts#L4), or add the branch-format followed by the bot PRs to the `skip-branches` option.
+
+## Contributing
+
+Follow the instructions [here](https://help.github.com/en/articles/creating-a-javascript-action#commit-and-push-your-action-to-github) to know more about GitHub actions.
+
+## FAQ
+
+<details>
+  <summary>Why is a Jira story ID required in the branch names?</summary>
+
+Story ID is required in order to:
+
+- Automate change-logs and release notes ⚙️.
+- Automate alerts to QA/Product teams and other external stake-holders 🔊.
+- Help us retrospect the sprint progress 📈.
+
+</details>
+
+<details>
+  <summary>Is there a way to get around this?</summary>
+  Nope 🙅
+
+</details>
+
+[jira]: https://www.atlassian.com/software/jira

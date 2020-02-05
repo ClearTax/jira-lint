@@ -1,5 +1,4 @@
-# Dependency directory
-node_modules
+__tests__/runner/*
 
 # Rest pulled from https://github.com/github/gitignore/blob/master/Node.gitignore
 # Logs
@@ -9,6 +8,13 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 lerna-debug.log*
+node_modules
+
+# local file for testing
+src/localTest.ts
+
+# vs code custom settings
+.vscode
 
 # Diagnostic reports (https://nodejs.org/api/report.html)
 report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
@@ -89,11 +95,3 @@ typings/
 
 # DynamoDB Local files
 .dynamodb/
-
-# OS metadata
-.DS_Store
-Thumbs.db
-
-# Ignore built ts files
-__tests__/runner/*
-lib/**/*
