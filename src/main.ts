@@ -106,8 +106,11 @@ async function run() {
       process.exit(1);
     }
 
+    const issueKey = issueKeys[0];
+    console.log(`JIRA key -> ${issueKey}`)
+
     const { getTicketDetails } = getJIRAClient(JIRA_BASE_URL, JIRA_TOKEN);
-    const details: JIRADetails = await getTicketDetails(issueKeys[0]);
+    const details: JIRADetails = await getTicketDetails(issueKey);
     if (details.key) {
       const podLabel = details?.project?.name || '';
       const hotfixLabel: string = getHotfixLabel(baseBranch);
@@ -160,6 +163,7 @@ async function run() {
       process.exit(1);
     }
   } catch (error) {
+    console.log({ error });
     core.setFailed(error.message);
     process.exit(1);
   }
