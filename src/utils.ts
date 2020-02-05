@@ -3,7 +3,13 @@ import * as core from '@actions/core';
 import * as github from '@actions/github';
 import similarity from 'string-similarity';
 import { IssuesAddLabelsParams, PullsUpdateParams, IssuesCreateCommentParams } from '@octokit/rest';
-import { MARKER_REGEX, BOT_BRANCH_PATTERNS, DEFAULT_BRANCH_PATTERNS, JIRA_REGEX_MATCHER, HIDDEN_MARKER } from './constants';
+import {
+  MARKER_REGEX,
+  BOT_BRANCH_PATTERNS,
+  DEFAULT_BRANCH_PATTERNS,
+  JIRA_REGEX_MATCHER,
+  HIDDEN_MARKER,
+} from './constants';
 import { JIRA, JIRADetails } from './types';
 
 export const isBlank = (input: string) => input.trim().length === 0;
@@ -12,7 +18,11 @@ export const isNotBlank = (input: string) => !isBlank(input);
 /**
  * Reverse a string
  */
-export const reverseString = (input: string) => input.split('').reverse().join('');
+export const reverseString = (input: string) =>
+  input
+    .split('')
+    .reverse()
+    .join('');
 
 /**
  * Extract JIRA issue keys from a string
@@ -40,12 +50,11 @@ export const getHotfixLabel = (baseBranch: string): string => {
   return '';
 };
 
-
-export const getJIRAClient = (baseURL:string, token: string) => {
+export const getJIRAClient = (baseURL: string, token: string) => {
   const client = axios.create({
     baseURL: `${baseURL}/rest/api/3`,
     timeout: 2000,
-    headers: { 'Authorization': `Basic ${token}` },
+    headers: { Authorization: `Basic ${token}` },
   });
 
   /**
@@ -53,7 +62,9 @@ export const getJIRAClient = (baseURL:string, token: string) => {
    */
   const getIssue = async (id: string): Promise<JIRA.Issue> => {
     try {
-      const response = await client.get<JIRA.Issue>(`/issue/${id}?fields=project,summary,issuetype,labels,customfield_10016`);
+      const response = await client.get<JIRA.Issue>(
+        `/issue/${id}?fields=project,summary,issuetype,labels,customfield_10016`
+      );
       return response.data;
     } catch (e) {
       throw e;
@@ -66,18 +77,16 @@ export const getJIRAClient = (baseURL:string, token: string) => {
   const getDetails = async (key: string) => {
     try {
       const issue: JIRA.Issue = await getIssue(key);
-      const { fields: {
-        issuetype: type,
-        project,
-        summary,
-        customfield_10016: estimate,
-        labels: rawLabels,
-      } } = issue;
+      const {
+        fields: { issuetype: type, project, summary, customfield_10016: estimate, labels: rawLabels },
+      } = issue;
 
       const labels = rawLabels.map(label => ({
         name: label,
-        url: `${baseURL}/issues?jql=${encodeURIComponent(`project = ${project.key} AND labels = ${label} order by created DESC`)}`
-      }))
+        url: `${baseURL}/issues?jql=${encodeURIComponent(
+          `project = ${project.key} AND labels = ${label} order by created DESC`
+        )}`,
+      }));
 
       return {
         key,
@@ -206,12 +215,6 @@ export const getPRTitleComment = (storyTitle: string, prTitle: string): string =
 };
 
 /**
- * Remove invalid entries from an array
- * @param {Array} arr
- */
-export const filterArray = (arr: string[]): string[] => (arr && arr.length ? arr.filter(x => x.trim()) : []);
-
-/**
  * Check if the PR is an automated one created by a bot or one matching ignore patterns supplied
  * via action metadata.
  * @param {string} branch
@@ -240,7 +243,6 @@ export const shouldSkipBranchLint = (branch: string, additionalIgnorePattern?: s
   console.log(`branch '${branch}' does not match ignore pattern provided in 'skip-branches' option:`, ignorePattern);
   return false;
 };
-
 
 /**
  * Returns true if the body contains the hidden marker. Used to avoid adding
@@ -283,9 +285,13 @@ export const getPRDescription = (body: string = '', details: JIRADetails): strin
     <tr>
       <td>Labels</td>
       <td>
-        ${details.labels.map(label => `
+        ${details.labels
+          .map(
+            label => `
           <a href="${label.url} title="${label.name}">${label.name}</a>
-        `).join(', ')}
+        `
+          )
+          .join(', ')}
       </td>
     </tr>
   </table>

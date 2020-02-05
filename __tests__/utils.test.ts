@@ -30,7 +30,7 @@ describe('shouldSkipBranchLint()', () => {
     expect(shouldSkipBranchLint('foo', '[0-9]{2}')).toBeFalsy();
     expect(shouldSkipBranchLint('f00', '[0-9]{2}')).toBeTruthy();
 
-    const customBranchRegex = '^(production-release|master|release\/v\\d+)$';
+    const customBranchRegex = '^(production-release|master|release/v\\d+)$';
     expect(shouldSkipBranchLint('production-release', customBranchRegex)).toBeTruthy();
     expect(shouldSkipBranchLint('master', customBranchRegex)).toBeTruthy();
     expect(shouldSkipBranchLint('release/v77', customBranchRegex)).toBeTruthy();
@@ -50,16 +50,6 @@ describe('shouldSkipBranchLint()', () => {
 
   it('should return false for other branches', () => {
     expect(shouldSkipBranchLint('feature/awesomeNewFeature')).toBeFalsy();
-  });
-});
-
-describe('filterArray()', () => {
-  it('should return a valid array', () => {
-    expect(filterArray(['123', '', '  '])).toEqual(['123']);
-  });
-
-  it('should return a empty array with empty input', () => {
-    expect(filterArray([])).toEqual([]);
   });
 });
 
@@ -83,15 +73,9 @@ describe('getHotFixLabel()', () => {
 
 describe('getJIRAIssueKeys()', () => {
   it('gets multiple keys from a string', () => {
-    expect(getJIRAIssueKeys('BF-18 abc-123 X-88 ABCDEFGHIJKL-999 abc XY-Z-333 abcDEF-33 ABCDEF-33 abcdef-33 ABC-1')).toEqual([
-      'BF-18',
-      'abc-123',
-      'X-88',
-      'ABCDEFGHIJKL-999',
-      'ABCDEF-33',
-      'abcdef-33',
-      'ABC-1',
-    ])
+    expect(
+      getJIRAIssueKeys('BF-18 abc-123 X-88 ABCDEFGHIJKL-999 abc XY-Z-333 abcDEF-33 ABCDEF-33 abcdef-33 ABC-1')
+    ).toEqual(['BF-18', 'abc-123', 'X-88', 'ABCDEFGHIJKL-999', 'ABCDEF-33', 'abcdef-33', 'ABC-1']);
   });
 
   it('gets jira key from different branch names', () => {
