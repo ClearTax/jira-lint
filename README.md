@@ -84,7 +84,7 @@ When a PR passes the above check, `jira-lint` will also add the story details to
 - Jira story type (_feature_, _task_, _bug_).
 
 <figure>
- <img src="https://assets1.cleartax-cdn.com/cleargst-frontend/misc/1568800226_pr-lint.png" alt="Story details and labels added to a PR" />
+ <img src="https://assets1.cleartax-cdn.com/cleargst-frontend/misc/1580891341_jira_lint.png" alt="Story details and labels added to a PR" />
  <figcaption>
  Story details and labels added to a PR.
  </figcaption>
