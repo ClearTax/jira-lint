@@ -1,6 +1,7 @@
-# Jira-lint 🧹
+# jira-lint 🧹
 
 > A light-weight lint workflow when using GitHub along with [JIRA][jira] for project management.
+Ported from [pivotal-lint](https://github.com/ClearTax/pivotal-lint/) for similar usage with Atlassian's Jira Software.
 
 ![GitHub package.json version](https://img.shields.io/github/package-json/v/cleartax/jira-lint?style=flat-square)
 [![GitHub](https://img.shields.io/github/license/cleartax/jira-lint?style=flat-square)](https://github.com/cleartax/jira-lint/blob/master/LICENSE.md)
