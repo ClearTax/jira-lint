@@ -142,6 +142,10 @@ Since tokens are private, we suggest adding them as [GitHub secrets](https://hel
 The Jira token is used to fetch issue information via the Jira REST API. To get the token:-
 1. Generate an [API token via JIRA](https://confluence.atlassian.com/cloud/api-tokens-938839638.html)
 2. Create the encoded token in the format of `base64Encode(<username>:<api_token>)`.
+   For example, if the username is `ci@example.com` and the token is `954c38744be9407ab6fb`, then `ci@example.com:954c38744be9407ab6fb` needs to be base64 encoded to form `Y2lAZXhhbXBsZS5jb206OTU0YzM4NzQ0YmU5NDA3YWI2ZmI=`
+3. The above value (in this example `Y2lAZXhhbXBsZS5jb206OTU0YzM4NzQ0YmU5NDA3YWI2ZmI=`) needs to be added as the `JIRA_TOKEN` secret in your GitHub project.
+
+Note: The user should have the [required permissions (mentioned under GET Issue)](https://developer.atlassian.com/cloud/jira/platform/rest/v3/?utm_source=%2Fcloud%2Fjira%2Fplatform%2Frest%2F&utm_medium=302#api-rest-api-3-issue-issueIdOrKey-get).
 
 ### Skipping branches
 
