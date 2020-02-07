@@ -66,25 +66,25 @@ steps:
 
 ### PR Status Checks
 
-`jira-lint` adds a status check which helps you avoid merging PRs which are missing a valid story ID in the branch name. It will use the [JIRA API](https://developer.atlassian.com/cloud/jira/platform/rest/v3/) to validate a given story id.
+`jira-lint` adds a status check which helps you avoid merging PRs which are missing a valid Jira Isue Key in the branch name. It will use the [JIRA API](https://developer.atlassian.com/cloud/jira/platform/rest/v3/) to validate a given key.
 
 ### PR Description & Labels
 
 #### Description
 
-When a PR passes the above check, `jira-lint` will also add the story details to the top of the PR description. It will pick details such as the story title, type, points and labels and add them to the PR description.
+When a PR passes the above check, `jira-lint` will also add the issue details to the top of the PR description. It will pick details such as the Issue summary, type, estimation points and labels and add them to the PR description.
 
 #### Labels
 
 `jira-lint` will automatically label PRs with:
 
-- A _team name_ label based on the Jira Project name (the project the story belongs to). For example, if your project name is `Escher POD` then it will add `escher` as a label.
+- A _team name_ label based on the Jira Project name (the project the issue belongs to). For example, if your project name is `Escher POD` then it will add `escher` as a label.
 - `HOTFIX-PROD` - if the PR is raised against `production-release`.
 - `HOTFIX-PRE-PROD` - if the PR is raised against `release/v*`.
-- Jira story type (_feature_, _task_, _bug_).
+- Jira issue type ([based on your project](https://confluence.atlassian.com/adminjiracloud/issue-types-844500742.html)).
 
 <figure>
- <img src="https://assets1.cleartax-cdn.com/cleargst-frontend/misc/1580891341_jira_lint.png" alt="Story details and labels added to a PR" />
+ <img src="https://assets1.cleartax-cdn.com/cleargst-frontend/misc/1580891341_jira_lint.png" alt="Issue details and labels added to a PR" />
  <figcaption>
  Story details and labels added to a PR.
  </figcaption>
