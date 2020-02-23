@@ -67,7 +67,7 @@ steps:
 
 ### PR Status Checks
 
-`jira-lint` adds a status check which helps you avoid merging PRs which are missing a valid Jira Isue Key in the branch name. It will use the [Jira API](https://developer.atlassian.com/cloud/jira/platform/rest/v3/) to validate a given key.
+`jira-lint` adds a status check which helps you avoid merging PRs which are missing a valid Jira Issue Key in the branch name. It will use the [Jira API](https://developer.atlassian.com/cloud/jira/platform/rest/v3/) to validate a given key.
 
 ### PR Description & Labels
 
