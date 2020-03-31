@@ -1,6 +1,7 @@
-# Jira-lint 🧹
+# jira-lint 🧹
 
 > A light-weight lint workflow when using GitHub along with [JIRA][jira] for project management.
+Ported from [pivotal-lint](https://github.com/ClearTax/pivotal-lint/) for similar usage with Atlassian's Jira Software.
 
 ![GitHub package.json version](https://img.shields.io/github/package-json/v/cleartax/jira-lint?style=flat-square)
 [![GitHub](https://img.shields.io/github/license/cleartax/jira-lint?style=flat-square)](https://github.com/cleartax/jira-lint/blob/master/LICENSE.md)
@@ -66,27 +67,27 @@ steps:
 
 ### PR Status Checks
 
-`jira-lint` adds a status check which helps you avoid merging PRs which are missing a valid story ID in the branch name. It will use the [JIRA API](https://developer.atlassian.com/cloud/jira/platform/rest/v3/) to validate a given story id.
+`jira-lint` adds a status check which helps you avoid merging PRs which are missing a valid Jira Issue Key in the branch name. It will use the [Jira API](https://developer.atlassian.com/cloud/jira/platform/rest/v3/) to validate a given key.
 
 ### PR Description & Labels
 
 #### Description
 
-When a PR passes the above check, `jira-lint` will also add the story details to the top of the PR description. It will pick details such as the story title, type, points and labels and add them to the PR description.
+When a PR passes the above check, `jira-lint` will also add the issue details to the top of the PR description. It will pick details such as the Issue summary, type, estimation points and labels and add them to the PR description.
 
 #### Labels
 
 `jira-lint` will automatically label PRs with:
 
-- A _team name_ label based on the Jira Project name (the project the story belongs to). For example, if your project name is `Escher POD` then it will add `escher` as a label.
+- A label based on the Jira Project name (the project the issue belongs to). For example, if your project name is `Escher` then it will add `escher` as a label.
 - `HOTFIX-PROD` - if the PR is raised against `production-release`.
 - `HOTFIX-PRE-PROD` - if the PR is raised against `release/v*`.
-- Jira story type (_feature_, _task_, _bug_).
+- Jira issue type ([based on your project](https://confluence.atlassian.com/adminjiracloud/issue-types-844500742.html)).
 
 <figure>
- <img src="https://assets1.cleartax-cdn.com/cleargst-frontend/misc/1580891341_jira_lint.png" alt="Story details and labels added to a PR" />
+ <img src="https://assets1.cleartax-cdn.com/cleargst-frontend/misc/1580891341_jira_lint.png" alt="Issue details and labels added to a PR" />
  <figcaption>
- Story details and labels added to a PR.
+ Issue details and labels added to a PR.
  </figcaption>
 </figure>
 
@@ -98,21 +99,21 @@ When a PR passes the above check, `jira-lint` will also add the story details to
 
 <figure>
   <img src="https://user-images.githubusercontent.com/6426069/69525276-c6e62b80-0f8d-11ea-9db4-23d524b5276c.png" />
-  <figcaption>When the title of the PR matches the title of the story well.</figcaption>
+  <figcaption>When the title of the PR matches the summary/title of the issue well.</figcaption>
 </figure>
 
 ---
 
 <figure>
   <img src="https://user-images.githubusercontent.com/6426069/69480647-6a6cfa00-0e2f-11ea-8750-4294f686dac7.png" />
-  <figcaption>When the title of the PR is <strong>slightly different</strong> compared to the title of the story</figcaption>
+  <figcaption>When the title of the PR is <strong>slightly different</strong> compared to the summary/title of the issue</figcaption>
 </figure>
 
 ---
 
 <figure>
   <img src="https://user-images.githubusercontent.com/6426069/69526103-7243b000-0f8f-11ea-9deb-acb8cbb6610b.png" />
-  <figcaption>When the title of the PR is <strong>very different</strong>  compared to the title of the story</figcaption>
+  <figcaption>When the title of the PR is <strong>very different</strong>  compared to the summary/title of the issue</figcaption>
 </figure>
 
 ---
@@ -129,13 +130,23 @@ When a PR passes the above check, `jira-lint` will also add the story details to
 | key             | description                                                                                                                                                                                                                                                                                                        | required | default |
 | --------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | -------- | ------- |
 | `github-token`  | Token used to update PR description. `GITHUB_TOKEN` is already available [when you use GitHub actions](https://help.github.com/en/actions/automating-your-workflow-with-github-actions/authenticating-with-the-github_token#about-the-github_token-secret), so all that is required is to pass it as a param here. | true     | null    |
-| `jira-token`    | API Token used to fetch Jira Story information. Must have read access to your Jira projects. Check [here](https://confluence.atlassian.com/cloud/api-tokens-938839638.html) on how to get a Jira API Token                                                                                                         | true     | null    |
+| `jira-token`    | Token used to fetch Jira Issue information.  Check [below](#jira-token) for more details on how to generate the token.                                                                                                          | true     | null    |
 | `jira-base-url` | The subdomain of JIRA cloud that you use to access it. Ex: "https://your-domain.atlassian.net".                                                                                                                                                                                                                    | true     | null    |
 | `skip-branches` | A regex to ignore running `jira-lint` on certain branches, like production etc.                                                                                                                                                                                                                                    | false    | ' '     |
 | `skip-comments` | A `Boolean` if set to `true` then `jira-lint` will skip adding lint comments for PR title.                                                                                                                                                                                                                         | false    | false   |
 | `pr-threshold`  | An `Integer` based on which `jira-lint` will add a comment discouraging huge PRs.                                                                                                                                                                                                                                  | false    | 800     |
 
 Since tokens are private, we suggest adding them as [GitHub secrets](https://help.github.com/en/actions/automating-your-workflow-with-github-actions/creating-and-using-encrypted-secrets).
+
+### `jira-token`
+
+The Jira token is used to fetch issue information via the Jira REST API. To get the token:-
+1. Generate an [API token via JIRA](https://confluence.atlassian.com/cloud/api-tokens-938839638.html)
+2. Create the encoded token in the format of `base64Encode(<username>:<api_token>)`.
+   For example, if the username is `ci@example.com` and the token is `954c38744be9407ab6fb`, then `ci@example.com:954c38744be9407ab6fb` needs to be base64 encoded to form `Y2lAZXhhbXBsZS5jb206OTU0YzM4NzQ0YmU5NDA3YWI2ZmI=`
+3. The above value (in this example `Y2lAZXhhbXBsZS5jb206OTU0YzM4NzQ0YmU5NDA3YWI2ZmI=`) needs to be added as the `JIRA_TOKEN` secret in your GitHub project.
+
+Note: The user should have the [required permissions (mentioned under GET Issue)](https://developer.atlassian.com/cloud/jira/platform/rest/v3/?utm_source=%2Fcloud%2Fjira%2Fplatform%2Frest%2F&utm_medium=302#api-rest-api-3-issue-issueIdOrKey-get).
 
 ### Skipping branches
 
@@ -150,9 +161,9 @@ Follow the instructions [here](https://help.github.com/en/articles/creating-a-ja
 ## FAQ
 
 <details>
-  <summary>Why is a Jira story ID required in the branch names?</summary>
+  <summary>Why is a Jira key required in the branch names?</summary>
 
-Story ID is required in order to:
+The key is required in order to:
 
 - Automate change-logs and release notes ⚙️.
 - Automate alerts to QA/Product teams and other external stake-holders 🔊.
