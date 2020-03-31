@@ -76,15 +76,15 @@ describe('getJIRAIssueKeys()', () => {
   it('gets multiple keys from a string', () => {
     expect(
       getJIRAIssueKeys('BF-18 abc-123 X-88 ABCDEFGHIJKL-999 abc XY-Z-333 abcDEF-33 ABCDEF-33 abcdef-33 ABC-1')
-    ).toEqual(['BF-18', 'abc-123', 'X-88', 'CDEFGHIJKL-999', 'Z-333', 'DEF-33', 'ABCDEF-33', 'abcdef-33', 'ABC-1']);
+    ).toEqual(['BF-18', 'ABC-123', 'X-88', 'CDEFGHIJKL-999', 'Z-333', 'ABCDEF-33', 'ABCDEF-33', 'ABCDEF-33', 'ABC-1']);
   });
 
   it('gets jira key from different branch names', () => {
-    expect(getJIRAIssueKeys('fix/login-protocol-es-43')).toEqual(['es-43']);
+    expect(getJIRAIssueKeys('fix/login-protocol-es-43')).toEqual(['ES-43']);
     expect(getJIRAIssueKeys('fix/login-protocol-ES-43')).toEqual(['ES-43']);
-    expect(getJIRAIssueKeys('feature/newFeature_esch-100')).toEqual(['esch-100']);
+    expect(getJIRAIssueKeys('feature/newFeature_esch-100')).toEqual(['ESCH-100']);
     expect(getJIRAIssueKeys('feature/newFeature_ESCH-101')).toEqual(['ESCH-101']);
-    expect(getJIRAIssueKeys('feature/newFeature--mojo-5611')).toEqual(['mojo-5611']);
+    expect(getJIRAIssueKeys('feature/newFeature--mojo-5611')).toEqual(['MOJO-5611']);
     expect(getJIRAIssueKeys('feature/newFeature--MOJO-6789')).toEqual(['MOJO-6789']);
 
     expect(getJIRAIssueKeys('chore/task-with-dashes--MOJO-6789')).toEqual(['MOJO-6789']);
@@ -93,6 +93,7 @@ describe('getJIRAIssueKeys()', () => {
     expect(getJIRAIssueKeys('MOJO-6789/task_with_underscores')).toEqual(['MOJO-6789']);
 
     expect(getJIRAIssueKeys('MOJO-6789/task_with_underscores-ES-43')).toEqual(['MOJO-6789', 'ES-43']);
+    expect(getJIRAIssueKeys('nudge-live-chat-users-Es-172')).toEqual(['ES-172']);
 
     expect(getJIRAIssueKeys('feature/missingKey')).toEqual([]);
     expect(getJIRAIssueKeys('')).toEqual([]);
