@@ -160,7 +160,7 @@ export const addComment = async (client: github.GitHub, comment: IssuesCreateCom
 /**
  *  Get a comment based on story title and PR title similarity
  */
-export const getPRTitleComment = (storyTitle: string, prTitle: string): string => {
+export const getPRTitleComment = (storyTitle: string, prTitle: string, skipGifs: string): string => {
   const matchRange: number = similarity.compareTwoStrings(storyTitle, prTitle);
   if (matchRange < 0.2) {
     return `<p>
@@ -209,9 +209,14 @@ export const getPRTitleComment = (storyTitle: string, prTitle: string): string =
     </p>
     `;
   }
-  return `<p>I'm a bot and I 👍 this PR title. 🤖</p>
 
-  <img src="https://media.giphy.com/media/XreQmk7ETCak0/giphy.gif" width="400" />`;
+  let s = `<p>I'm a bot and I 👍 this PR title. 🤖</p>`;
+  if (skipGifs !== 'true') {
+    s += `
+    
+    <img src="https://media.giphy.com/media/XreQmk7ETCak0/giphy.gif" width="400" />`;
+  }
+  return s
 };
 
 /**
@@ -322,9 +327,13 @@ export const isHumongousPR = (additions: number, threshold: number): boolean => 
  * @param {number} addtions
  * @return {string}
  */
-export const getHugePrComment = (additions: number, threshold: number): string =>
-  `<p>This PR is too huge for one to review :broken_heart: </p>
-  <img src="https://media.giphy.com/media/26tPskka6guetcHle/giphy.gif" width="400" />
+export const getHugePrComment = (additions: number, threshold: number, skipGifs: string): string => {
+  let s = `<p>This PR is too huge for one to review :broken_heart: </p>`
+  if (skipGifs !== 'true') {
+    s += `
+    <img src="https://media.giphy.com/media/26tPskka6guetcHle/giphy.gif" width="400" />`
+  }
+  s += `
     <table>
       <tr>
           <th>Additions</th>
@@ -342,6 +351,8 @@ export const getHugePrComment = (additions: number, threshold: number): string =
       Check out this <a href="https://www.atlassian.com/blog/git/written-unwritten-guide-pull-requests">guide</a> to learn more about PR best-practices.
     </p>
   `;
+  return s
+};
 
 /**
  * Get the comment body for pr with no JIRA id in the branch name

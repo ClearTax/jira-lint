@@ -27,6 +27,7 @@ const getInputs = () => {
   const GITHUB_TOKEN: string = core.getInput('github-token', { required: true });
   const BRANCH_IGNORE_PATTERN: string = core.getInput('skip-branches', { required: false }) || '';
   const SKIP_COMMENTS: string = core.getInput('skip-comments', { required: false }) || 'false';
+  const SKIP_GIFS: string = core.getInput('skip-gifs', { required: false }) || 'false';
   const PR_THRESHOLD: string = core.getInput('pr-threshold', { required: false }) || '';
 
   return {
@@ -34,6 +35,7 @@ const getInputs = () => {
     GITHUB_TOKEN,
     BRANCH_IGNORE_PATTERN,
     SKIP_COMMENTS,
+    SKIP_GIFS,
     PR_THRESHOLD,
     JIRA_BASE_URL: JIRA_BASE_URL.endsWith('/') ? JIRA_BASE_URL.replace(/\/$/, '') : JIRA_BASE_URL,
   };
@@ -41,7 +43,7 @@ const getInputs = () => {
 
 async function run() {
   try {
-    const { JIRA_TOKEN, JIRA_BASE_URL, GITHUB_TOKEN, BRANCH_IGNORE_PATTERN, SKIP_COMMENTS, PR_THRESHOLD } = getInputs();
+    const { JIRA_TOKEN, JIRA_BASE_URL, GITHUB_TOKEN, BRANCH_IGNORE_PATTERN, SKIP_COMMENTS, SKIP_GIFS, PR_THRESHOLD } = getInputs();
 
     const defaultAdditionsCount = 800;
     const prThreshold: number = PR_THRESHOLD ? Number(PR_THRESHOLD) : defaultAdditionsCount;
@@ -137,7 +139,7 @@ async function run() {
         if (shouldAddComments(SKIP_COMMENTS)) {
           const prTitleComment: IssuesCreateCommentParams = {
             ...commonPayload,
-            body: getPRTitleComment(details.summary, title),
+            body: getPRTitleComment(details.summary, title, SKIP_GIFS),
           };
           console.log('Adding comment for the PR title');
           addComment(client, prTitleComment);
@@ -146,7 +148,7 @@ async function run() {
           if (isHumongousPR(additions, prThreshold)) {
             const hugePrComment: IssuesCreateCommentParams = {
               ...commonPayload,
-              body: getHugePrComment(additions, prThreshold),
+              body: getHugePrComment(additions, prThreshold, SKIP_GIFS),
             };
             console.log('Adding comment for huge PR');
             addComment(client, hugePrComment);
