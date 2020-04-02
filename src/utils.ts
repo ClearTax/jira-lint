@@ -29,7 +29,7 @@ export const reverseString = (input: string) =>
  * @param {string} input
  */
 export const getJIRAIssueKeys = (input: string): string[] => {
-  const matches = reverseString(input).match(JIRA_REGEX_MATCHER);
+  const matches = reverseString(input).toUpperCase().match(JIRA_REGEX_MATCHER);
   if (matches?.length) {
     return matches.map(reverseString).reverse();
   } else return [];
