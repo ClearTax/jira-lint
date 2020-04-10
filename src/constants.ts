@@ -11,4 +11,4 @@ export const DEFAULT_BRANCH_PATTERNS:  RegExp[] = [
   /^gh-pages$/,
 ];
 
-export const JIRA_REGEX_MATCHER = /\d+-(([A-Z]{1,10})|[a-z]{1,10})/g;
+export const JIRA_REGEX_MATCHER = /\d+-(([A-Z0-9]{1,10})|[a-z0-9]{1,10})/g;

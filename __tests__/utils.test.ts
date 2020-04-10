@@ -75,8 +75,8 @@ describe('getHotFixLabel()', () => {
 describe('getJIRAIssueKeys()', () => {
   it('gets multiple keys from a string', () => {
     expect(
-      getJIRAIssueKeys('BF-18 abc-123 X-88 ABCDEFGHIJKL-999 abc XY-Z-333 abcDEF-33 ABCDEF-33 abcdef-33 ABC-1')
-    ).toEqual(['BF-18', 'ABC-123', 'X-88', 'CDEFGHIJKL-999', 'Z-333', 'ABCDEF-33', 'ABCDEF-33', 'ABCDEF-33', 'ABC-1']);
+      getJIRAIssueKeys('BF-18 abc-123 X-88 ABCDEFGHIJKL-999 abc XY-Z-333 abcDEF-33 ABCDEF-33 abcdef-33 ABC-1 PB2-1 pb2-1 P2P-1 p2p-1')
+    ).toEqual(['BF-18', 'ABC-123', 'X-88', 'CDEFGHIJKL-999', 'Z-333', 'ABCDEF-33', 'ABCDEF-33', 'ABCDEF-33', 'ABC-1', 'PB2-1', 'pb2-1', 'P2P-1', 'p2p-1']);
   });
 
   it('gets jira key from different branch names', () => {
