@@ -7,7 +7,6 @@ import {
   getPRDescription,
   isHumongousPR,
   LABELS,
-  shouldAddComments,
   shouldSkipBranchLint,
   shouldUpdatePRDescription,
   getJIRAClient,
@@ -161,7 +160,7 @@ describe('getPRDescription()', () => {
       summary: 'Story title or summary',
       project: { name: 'project', url: 'project-url', key: 'abc' },
     };
-    const description = getPRDescription('some_body', issue as any);
+    const description = getPRDescription('some_body', issue);
 
     expect(shouldUpdatePRDescription(description)).toBeFalsy();
     expect(description).toContain(issue.key);
@@ -181,19 +180,6 @@ describe('isHumongousPR()', () => {
 
   it('should return false with erroneous inputs', () => {
     expect(isHumongousPR(NaN, NaN)).toBeFalsy();
-  });
-});
-
-describe('shouldAddComments()', () => {
-  it('should return true if SKIP_COMMENTS is not set', () => {
-    expect(shouldAddComments('')).toBeTruthy();
-  });
-
-  it('should return true if SKIP_COMMENTS is set to false', () => {
-    expect(shouldAddComments('false')).toBeTruthy();
-  });
-  it('should return false if SKIP_COMMENTS is set to true', () => {
-    expect(shouldAddComments('true')).toBeFalsy();
   });
 });
 
@@ -217,7 +203,7 @@ describe('getLabelsForDisplay()', () => {
         { name: 'one', url: 'url-one' },
         { name: 'two', url: 'url-two' },
       ])
-    ).toBe(`<a href=\"url-one\" title=\"one\">one</a>, <a href=\"url-two\" title=\"two\">two</a>`);
+    ).toBe(`<a href="url-one" title="one">one</a>, <a href="url-two" title="two">two</a>`);
   });
 });
 
