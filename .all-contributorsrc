@@ -15,6 +15,17 @@
         "review",
         "ideas"
       ]
+    },
+    {
+      "login": "rheaditi",
+      "name": "Aditi Mohanty",
+      "avatar_url": "https://avatars3.githubusercontent.com/u/6426069?v=4",
+      "profile": "https://aditimohanty.com",
+      "contributions": [
+        "code",
+        "doc",
+        "infra"
+      ]
     }
   ],
   "contributorsPerLine": 7,
