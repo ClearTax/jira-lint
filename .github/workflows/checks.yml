@@ -1,0 +1,38 @@
+name: "test-typescript-action"
+on: # rebuild any PRs and main branch changes (mirror few typescript-action conventions)
+pull_request:
+  push:
+    branches:
+      - master
+      - 'releases/*'
+jobs:
+  build-test:
+    runs-on: ubuntu-16.04
+    steps:
+    - uses: actions/checkout@v2
+    - uses: actions/setup-node@v1
+      name: setup node
+      with:
+        node-version: '13.x'
+
+    - name: "install"
+      run: npm ci
+
+    - name: "lint & format"
+      run: npm run lint
+
+    - name: "build"
+      run: npm run build
+
+    - name: "check for uncommitted changes"
+      # Ensure no diff when built on ci
+      # ignore node_modules since dev/fresh ci deps installed.
+      run: |
+        git diff --exit-code --stat -- . ':!node_modules' \
+        || (echo "##[error] found changed files after build. please 'npm run build'" \
+                  "and check in all changes" \
+            && exit 1)
+
+    - name: "test"
+      run: npm run test
+

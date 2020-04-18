@@ -1,8 +1,10 @@
 #/usr/bin/env bash
 
+# clean before build
+rm -rf dist
+
 # run build
 npm run build
 
-# commit the lib file
-
-git add lib
+# commit the dist file(s)
+git add dist

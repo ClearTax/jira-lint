@@ -2,9 +2,10 @@
   "name": "jira-lint",
   "version": "0.0.1",
   "description": "Add JIRA issue details to your GitHub pull request",
-  "main": "lib/index.js",
+  "main": "dist/index.js",
   "scripts": {
-    "build": "ncc build src/main.ts -o lib -m",
+    "prebuild": "engines-ok",
+    "build": "ncc build src/main.ts -o dist -m",
     "test": "jest",
     "test:watch": "jest --watch",
     "docs:toc": "markdown-toc -i --bullets='-' README.md"
@@ -13,10 +14,19 @@
     "type": "git",
     "url": "git+https://github.com/cleartax/jira-lint"
   },
+  "engines": {
+    "node": ">= 13",
+    "npm": ">= 6"
+  },
   "keywords": [
     "actions",
     "node",
-    "setup"
+    "setup",
+    "github",
+    "pr-description",
+    "labels",
+    "jira",
+    "jira-issue"
   ],
   "author": "cleartax",
   "license": "MIT",
@@ -38,9 +48,10 @@
     "@types/string-similarity": "^3.0.0",
     "@zeit/ncc": "^0.22.1",
     "axios": "^0.19.2",
+    "engines-ok": "^1.2.0",
     "husky": "^4.2.5",
-    "jest": "^25.3.0",
     "jest-circus": "^25.3.0",
+    "jest": "^25.3.0",
     "lodash": "^4.17.15",
     "markdown-toc": "^1.2.0",
     "ts-jest": "^25.4.0",
