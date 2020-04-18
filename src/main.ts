@@ -3,43 +3,43 @@ import * as github from '@actions/github';
 import { PullsUpdateParams, IssuesCreateCommentParams } from '@octokit/rest';
 
 import {
-  getJIRAClient,
-  getHotfixLabel,
-  addLabels,
-  shouldSkipBranchLint,
-  updatePrDetails,
-  getJIRAIssueKeys,
-  getPRDescription,
-  shouldUpdatePRDescription,
   addComment,
-  getPRTitleComment,
+  addLabels,
+  getHotfixLabel,
   getHugePrComment,
-  isHumongousPR,
+  getJIRAClient,
+  getJIRAIssueKeys,
   getNoIdComment,
-  shouldAddComments,
+  getPRDescription,
+  getPRTitleComment,
+  isHumongousPR,
   isNotBlank,
+  shouldSkipBranchLint,
+  shouldUpdatePRDescription,
+  updatePrDetails,
 } from './utils';
-import { PullRequestParams, JIRADetails } from './types';
+import { PullRequestParams, JIRADetails, JIRALintActionInputs } from './types';
+import { DEFAULT_PR_ADDITIONS_THRESHOLD } from './constants';
 
-const getInputs = () => {
+const getInputs = (): JIRALintActionInputs => {
   const JIRA_TOKEN: string = core.getInput('jira-token', { required: true });
   const JIRA_BASE_URL: string = core.getInput('jira-base-url', { required: true });
   const GITHUB_TOKEN: string = core.getInput('github-token', { required: true });
   const BRANCH_IGNORE_PATTERN: string = core.getInput('skip-branches', { required: false }) || '';
-  const SKIP_COMMENTS: string = core.getInput('skip-comments', { required: false }) || 'false';
-  const PR_THRESHOLD: string = core.getInput('pr-threshold', { required: false }) || '';
+  const SKIP_COMMENTS: boolean = core.getInput('skip-comments', { required: false }) === 'true';
+  const PR_THRESHOLD = parseInt(core.getInput('pr-threshold', { required: false }), 10);
 
   return {
     JIRA_TOKEN,
     GITHUB_TOKEN,
     BRANCH_IGNORE_PATTERN,
     SKIP_COMMENTS,
-    PR_THRESHOLD,
+    PR_THRESHOLD: isNaN(PR_THRESHOLD) ? DEFAULT_PR_ADDITIONS_THRESHOLD : PR_THRESHOLD,
     JIRA_BASE_URL: JIRA_BASE_URL.endsWith('/') ? JIRA_BASE_URL.replace(/\/$/, '') : JIRA_BASE_URL,
   };
 };
 
-async function run() {
+async function run(): Promise<void> {
   try {
     const { JIRA_TOKEN, JIRA_BASE_URL, GITHUB_TOKEN, BRANCH_IGNORE_PATTERN, SKIP_COMMENTS, PR_THRESHOLD } = getInputs();
 
@@ -50,11 +50,15 @@ async function run() {
       payload: {
         repository,
         organization: { login: owner },
-        pull_request,
+        pull_request: pullRequest,
       },
     } = github.context;
 
-    const repo: string = repository!.name;
+    if (typeof repository === 'undefined') {
+      throw new Error(`Missing 'repository' from github action context.`);
+    }
+
+    const { name: repo } = repository;
 
     const {
       base: { ref: baseBranch },
@@ -63,12 +67,13 @@ async function run() {
       body: prBody = '',
       additions = 0,
       title = '',
-    } = pull_request as PullRequestParams;
+    } = pullRequest as PullRequestParams;
 
     // common fields for both issue and comment
     const commonPayload = {
       owner,
       repo,
+      // eslint-disable-next-line @typescript-eslint/camelcase
       issue_number: prNumber,
     };
 
@@ -108,7 +113,7 @@ async function run() {
 
     // use the last match (end of the branch name)
     const issueKey = issueKeys[issueKeys.length - 1];
-    console.log(`JIRA key -> ${issueKey}`)
+    console.log(`JIRA key -> ${issueKey}`);
 
     const { getTicketDetails } = getJIRAClient(JIRA_BASE_URL, JIRA_TOKEN);
     const details: JIRADetails = await getTicketDetails(issueKey);
@@ -128,13 +133,14 @@ async function run() {
         const prData: PullsUpdateParams = {
           owner,
           repo,
+          // eslint-disable-next-line @typescript-eslint/camelcase
           pull_number: prNumber,
           body: getPRDescription(prBody, details),
         };
         await updatePrDetails(client, prData);
 
         // add comment for PR title
-        if (shouldAddComments(SKIP_COMMENTS)) {
+        if (!SKIP_COMMENTS) {
           const prTitleComment: IssuesCreateCommentParams = {
             ...commonPayload,
             body: getPRTitleComment(details.summary, title),

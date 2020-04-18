@@ -8,6 +8,7 @@
     "build": "ncc build src/main.ts -o dist -m",
     "test": "jest",
     "test:watch": "jest --watch",
+    "lint": "eslint src/**/*.ts",
     "docs:toc": "markdown-toc -i --bullets='-' README.md"
   },
   "repository": {
@@ -46,14 +47,19 @@
     "@types/lodash": "^4.14.150",
     "@types/node": "^13.13.0",
     "@types/string-similarity": "^3.0.0",
+    "@typescript-eslint/parser": "^2.28.0",
     "@zeit/ncc": "^0.22.1",
     "axios": "^0.19.2",
     "engines-ok": "^1.2.0",
+    "eslint-plugin-github": "^3.4.1",
+    "eslint-plugin-jest": "^23.8.2",
+    "eslint": "^6.8.0",
     "husky": "^4.2.5",
     "jest-circus": "^25.3.0",
     "jest": "^25.3.0",
     "lodash": "^4.17.15",
     "markdown-toc": "^1.2.0",
+    "prettier": "^2.0.4",
     "ts-jest": "^25.4.0",
     "typescript": "^3.8.3"
   }

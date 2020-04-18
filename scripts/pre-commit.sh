@@ -1,5 +1,9 @@
 #/usr/bin/env bash
 
+# lint
+prettier --check **/*.ts
+npm run lint
+
 # clean before build
 rm -rf dist
 
