@@ -1,0 +1,26 @@
+{
+  "files": [
+    "README.md"
+  ],
+  "imageSize": 100,
+  "commit": false,
+  "contributors": [
+    {
+      "login": "rajanand02",
+      "name": "Raj Anand",
+      "avatar_url": "https://avatars3.githubusercontent.com/u/4851763?v=4",
+      "profile": "http://hacktivist.in",
+      "contributions": [
+        "code",
+        "review",
+        "ideas"
+      ]
+    }
+  ],
+  "contributorsPerLine": 7,
+  "projectName": "jira-lint",
+  "projectOwner": "ClearTax",
+  "repoType": "github",
+  "repoHost": "https://github.com",
+  "skipCi": true
+}
