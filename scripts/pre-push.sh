@@ -3,9 +3,6 @@
 # lint
 npm run lint
 
-# clean before build
-rm -rf lib
-
 # run build
 echo "Running npm build.."
 npm run build
