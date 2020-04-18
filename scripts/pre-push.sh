@@ -1,5 +1,12 @@
 #/usr/bin/env bash
 
+# lint
+prettier --write **/*.ts
+npm run lint -- --fix
+
+# clean before build
+rm -rf dist
+
 # run build
 echo "Running npm build.."
 npm run build

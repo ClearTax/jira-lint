@@ -212,11 +212,13 @@ describe('getHugePrComment()', () => {
 
 describe('getLabelsForDisplay()', () => {
   it('generates label markup without spaces', () => {
-    expect(getLabelsForDisplay([
-      { name: 'one', url: 'url-one' },
-      { name: 'two', url: 'url-two' },
-    ])).toBe(`<a href=\"url-one\" title=\"one\">one</a>, <a href=\"url-two\" title=\"two\">two</a>`);
-  })
+    expect(
+      getLabelsForDisplay([
+        { name: 'one', url: 'url-one' },
+        { name: 'two', url: 'url-two' },
+      ])
+    ).toBe(`<a href=\"url-one\" title=\"one\">one</a>, <a href=\"url-two\" title=\"two\">two</a>`);
+  });
 });
 
 describe('JIRA Client', () => {
