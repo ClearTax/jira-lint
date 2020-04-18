@@ -1,7 +1,7 @@
 name: "test-typescript-action"
 on: # rebuild any PRs and main branch changes (mirror few typescript-action conventions)
-  - pull_request
-  - push:
+  pull_request
+  push:
     branches:
       - master
       - 'releases/*'
