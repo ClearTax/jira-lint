@@ -2,10 +2,10 @@
   "name": "jira-lint",
   "version": "0.0.1",
   "description": "Add JIRA issue details to your GitHub pull request",
-  "main": "dist/index.js",
+  "main": "lib/index.js",
   "scripts": {
     "prebuild": "engines-ok",
-    "build": "ncc build src/main.ts -o dist -m",
+    "build": "ncc build src/main.ts -o lib -m",
     "test": "jest",
     "test:watch": "jest --watch",
     "lint": "prettier --check src/**/*.ts && eslint src/**/*.ts",

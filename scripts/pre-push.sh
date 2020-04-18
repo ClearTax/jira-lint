@@ -4,7 +4,7 @@
 npm run lint
 
 # clean before build
-rm -rf dist
+rm -rf lib
 
 # run build
 echo "Running npm build.."

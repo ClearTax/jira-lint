@@ -4,10 +4,10 @@
 npm run lint:fix
 
 # clean before build
-rm -rf dist
+rm -rf lib
 
 # run build
 npm run build
 
-# commit the dist file(s)
-git add dist
+# commit the lib file(s)
+git add lib
