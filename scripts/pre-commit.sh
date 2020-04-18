@@ -1,8 +1,5 @@
 #/usr/bin/env bash
 
-# lint
-npm run lint:fix
-
 # run build
 npm run build
 

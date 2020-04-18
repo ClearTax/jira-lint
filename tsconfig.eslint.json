@@ -1,5 +1,11 @@
 {
   "extends": "./tsconfig.json",
   "exclude": ["node_modules"],
-  "include": ["**/.eslintrc.js", "**/.prettierrc.js"]
+  "include": [
+    "src/**/*.ts",
+    ".eslintrc.js",
+    ".prettierrc.js",
+    "jest.config.js",
+    "lint-staged.config.js"
+  ]
 }

@@ -9,7 +9,6 @@
     "test": "jest",
     "test:watch": "jest --watch",
     "lint": "prettier --check src/**/*.ts && eslint src/**/*.ts",
-    "lint:fix": "prettier --write src/**/*.ts && eslint src/**/*.ts --fix",
     "docs:toc": "markdown-toc -i --bullets='-' README.md"
   },
   "repository": {
@@ -35,7 +34,7 @@
   "husky": {
     "hooks": {
       "pre-push": "./scripts/pre-push.sh",
-      "pre-commit": "./scripts/pre-commit.sh"
+      "pre-commit": "lint-staged && ./scripts/pre-commit.sh"
     }
   },
   "dependencies": {
@@ -58,6 +57,7 @@
     "husky": "^4.2.5",
     "jest-circus": "^25.3.0",
     "jest": "^25.3.0",
+    "lint-staged": "^10.1.5",
     "lodash": "^4.17.15",
     "markdown-toc": "^1.2.0",
     "prettier": "^2.0.4",
