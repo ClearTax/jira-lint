@@ -1,30 +1,30 @@
 # jira-lint 🧹
-<!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-2-orange.svg?style=flat-square)](#contributors-)
-<!-- ALL-CONTRIBUTORS-BADGE:END -->
-![GitHub package.json version](https://img.shields.io/github/package-json/v/cleartax/jira-lint?style=flat-square)
-[![GitHub](https://img.shields.io/github/license/cleartax/jira-lint?style=flat-square)](https://github.com/cleartax/jira-lint/blob/master/LICENSE.md)
-
 
 > A light-weight lint workflow when using GitHub along with [JIRA][jira] for project management.
-Ported from [pivotal-lint](https://github.com/ClearTax/pivotal-lint/) for similar usage with Atlassian's Jira Software.
+> Ported from [pivotal-lint](https://github.com/ClearTax/pivotal-lint/) for similar usage with Atlassian's Jira Software.
 
+![GitHub package.json version](https://img.shields.io/github/package-json/v/cleartax/jira-lint?style=flat-square)
+[![GitHub](https://img.shields.io/github/license/cleartax/jira-lint?style=flat-square)](https://github.com/cleartax/jira-lint/blob/master/LICENSE.md)
+[![All Contributors](https://img.shields.io/badge/all_contributors-2-orange.svg?style=flat-square)](#contributors)
+
+---
 
 <!-- toc -->
 
-- [Jira-lint 🧹](#jira-lint-%f0%9f%a7%b9)
-  - [Installation](#installation)
-    - [Semantic Versions](#semantic-versions)
-  - [Features](#features)
-    - [PR Status Checks](#pr-status-checks)
-    - [PR Description & Labels](#pr-description--labels)
-      - [Description](#description)
-      - [Labels](#labels)
-      - [Soft-validations via comments](#soft-validations-via-comments)
-    - [Options](#options)
-    - [Skipping branches](#skipping-branches)
-  - [Contributing](#contributing)
-  - [FAQ](#faq)
+- [Installation](#installation)
+  - [Semantic Versions](#semantic-versions)
+- [Features](#features)
+  - [PR Status Checks](#pr-status-checks)
+  - [PR Description & Labels](#pr-description--labels)
+    - [Description](#description)
+    - [Labels](#labels)
+    - [Soft-validations via comments](#soft-validations-via-comments)
+  - [Options](#options)
+  - [`jira-token`](#jira-token)
+  - [Skipping branches](#skipping-branches)
+- [Contributing](#contributing)
+- [FAQ](#faq)
+- [Contributors](#contributors)
 
 <!-- tocstop -->
 
@@ -183,7 +183,7 @@ The key is required in order to:
 
 [jira]: https://www.atlassian.com/software/jira
 
-## Contributors ✨
+## Contributors
 
 Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/docs/en/emoji-key)):
 
