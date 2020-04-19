@@ -1,0 +1,46 @@
+{
+  "files": [
+    "README.md"
+  ],
+  "imageSize": 100,
+  "commit": false,
+  "contributors": [
+    {
+      "login": "rajanand02",
+      "name": "Raj Anand",
+      "avatar_url": "https://avatars3.githubusercontent.com/u/4851763?v=4",
+      "profile": "http://hacktivist.in",
+      "contributions": [
+        "code",
+        "review",
+        "ideas"
+      ]
+    },
+    {
+      "login": "rheaditi",
+      "name": "Aditi Mohanty",
+      "avatar_url": "https://avatars3.githubusercontent.com/u/6426069?v=4",
+      "profile": "https://aditimohanty.com/?utm_source=github&utm_medium=documentation-allcontributors&utm_content=jira-lint",
+      "contributions": [
+        "code",
+        "doc",
+        "infra"
+      ]
+    },
+    {
+      "login": "dustman9000",
+      "name": "Dustin Row",
+      "avatar_url": "https://avatars0.githubusercontent.com/u/3944352?v=4",
+      "profile": "https://github.com/dustman9000",
+      "contributions": [
+        "review"
+      ]
+    }
+  ],
+  "contributorsPerLine": 7,
+  "projectName": "jira-lint",
+  "projectOwner": "ClearTax",
+  "repoType": "github",
+  "repoHost": "https://github.com",
+  "skipCi": true
+}
