@@ -35,6 +35,15 @@
       "contributions": [
         "review"
       ]
+    },
+    {
+      "login": "richardlhao",
+      "name": "richardlhao",
+      "avatar_url": "https://avatars1.githubusercontent.com/u/60636550?v=4",
+      "profile": "https://github.com/richardlhao",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "contributorsPerLine": 7,
