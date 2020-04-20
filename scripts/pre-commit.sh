@@ -1,5 +1,8 @@
 #/usr/bin/env bash
 
+# install
+npm ci
+
 # run build
 npm run build
 
