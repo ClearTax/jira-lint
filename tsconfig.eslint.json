@@ -6,6 +6,7 @@
     ".eslintrc.js",
     ".prettierrc.js",
     "jest.config.js",
-    "lint-staged.config.js"
+    "lint-staged.config.js",
+    "**/*.test.ts"
   ]
 }

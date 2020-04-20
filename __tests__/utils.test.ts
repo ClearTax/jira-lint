@@ -18,7 +18,15 @@ jest.spyOn(console, 'log').mockImplementation(); // avoid actual console.log in 
 
 describe('shouldSkipBranchLint()', () => {
   it('should recognize bot PRs', () => {
-    expect(shouldSkipBranchLint('dependabot')).toBeTruthy();
+    expect(shouldSkipBranchLint('dependabot')).toBe(true);
+    expect(shouldSkipBranchLint('dependabot/npm_and_yarn/types/react-dom-16.9.6')).toBe(true);
+    expect(shouldSkipBranchLint('feature/add-dependabot-config')).toBe(false);
+    expect(shouldSkipBranchLint('feature/add-dependabot-config-OSS-101')).toBe(false);
+
+    expect(shouldSkipBranchLint('all-contributors')).toBe(true);
+    expect(shouldSkipBranchLint('all-contributors/add-ghost')).toBe(true);
+    expect(shouldSkipBranchLint('chore/add-all-contributors')).toBe(false);
+    expect(shouldSkipBranchLint('chore/add-all-contributors-OSS-102')).toBe(false);
   });
 
   it('should handle custom ignore patterns', () => {
@@ -74,8 +82,24 @@ describe('getHotFixLabel()', () => {
 describe('getJIRAIssueKeys()', () => {
   it('gets multiple keys from a string', () => {
     expect(
-      getJIRAIssueKeys('BF-18 abc-123 X-88 ABCDEFGHIJKL-999 abc XY-Z-333 abcDEF-33 ABCDEF-33 abcdef-33 ABC-1 PB2-1 pb2-1 P2P-1 p2p-1')
-    ).toEqual(['BF-18', 'ABC-123', 'X-88', 'CDEFGHIJKL-999', 'Z-333', 'ABCDEF-33', 'ABCDEF-33', 'ABCDEF-33', 'ABC-1', 'PB2-1', 'PB2-1', 'P2P-1', 'P2P-1']);
+      getJIRAIssueKeys(
+        'BF-18 abc-123 X-88 ABCDEFGHIJKL-999 abc XY-Z-333 abcDEF-33 ABCDEF-33 abcdef-33 ABC-1 PB2-1 pb2-1 P2P-1 p2p-1'
+      )
+    ).toEqual([
+      'BF-18',
+      'ABC-123',
+      'X-88',
+      'CDEFGHIJKL-999',
+      'Z-333',
+      'ABCDEF-33',
+      'ABCDEF-33',
+      'ABCDEF-33',
+      'ABC-1',
+      'PB2-1',
+      'PB2-1',
+      'P2P-1',
+      'P2P-1',
+    ]);
   });
 
   it('gets jira key from different branch names', () => {
