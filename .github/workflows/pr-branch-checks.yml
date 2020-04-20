@@ -33,6 +33,13 @@ jobs:
                   "and check in all changes" \
             && exit 1)
 
+    - name: "archive lib when diff"
+      uses: actions/upload-artifact@v1
+      if: failure()
+      with:
+        name: ci-built-lib
+        path: lib/index.js
+
     - name: "test"
       run: npm run test
 
