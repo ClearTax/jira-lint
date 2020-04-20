@@ -1,4 +1,4 @@
-name: "test-typescript-action"
+name: "lint, build & test"
 on: # rebuild any PRs and main branch changes (mirror few typescript-action conventions)
   pull_request:
   push:
