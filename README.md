@@ -6,6 +6,7 @@
 ![GitHub package.json version](https://img.shields.io/github/package-json/v/cleartax/jira-lint?style=flat-square)
 [![GitHub](https://img.shields.io/github/license/cleartax/jira-lint?style=flat-square)](https://github.com/cleartax/jira-lint/blob/master/LICENSE.md)
 [![All Contributors](https://img.shields.io/badge/all_contributors-2-orange.svg?style=flat-square)](#contributors)
+![build & test](https://github.com/ClearTax/jira-lint/workflows/lint,%20build%20&%20test/badge.svg)
 
 ---
 

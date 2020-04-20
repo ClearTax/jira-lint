@@ -1,7 +1,7 @@
 #/usr/bin/env bash
 
-# npm ci
-npm ci
+# lint
+npm run lint
 
 # run build
 echo "Running npm build.."
