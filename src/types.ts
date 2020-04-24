@@ -1,5 +1,6 @@
+import { AxiosInstance } from 'axios';
+
 export interface PullRequestParams {
-  [key: string]: any;
   number: number;
   html_url?: string;
   body?: string;
@@ -10,8 +11,9 @@ export interface PullRequestParams {
     ref: string;
   };
   changed_files?: number;
-  addtions?: number;
+  additions?: number;
   title?: string;
+  [key: string]: unknown;
 }
 
 export enum StoryType {
@@ -86,7 +88,7 @@ export namespace JIRA {
       issuetype: IssueType;
       project: IssueProject;
       labels: string[];
-      [k: string]: any;
+      [k: string]: unknown;
     };
   }
 }
@@ -105,5 +107,22 @@ export interface JIRADetails {
     key: string;
   };
   estimate: string | number;
-  labels: ReadonlyArray<{ name: string; url: string }>;
+  labels: readonly { name: string; url: string }[];
+}
+
+export interface JIRALintActionInputs {
+  JIRA_TOKEN: string;
+  JIRA_BASE_URL: string;
+  GITHUB_TOKEN: string;
+  BRANCH_IGNORE_PATTERN: string;
+  SKIP_COMMENTS: boolean;
+  PR_THRESHOLD: number;
+}
+
+export interface JIRAClient {
+  client: AxiosInstance;
+  /** Get complete JIRA Issue details. */
+  getIssue: (key: string) => Promise<JIRA.Issue>;
+  /** Get required details to display in PR. */
+  getTicketDetails: (key: string) => Promise<JIRADetails>;
 }

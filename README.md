@@ -1,26 +1,31 @@
 # jira-lint 🧹
 
 > A light-weight lint workflow when using GitHub along with [JIRA][jira] for project management.
-Ported from [pivotal-lint](https://github.com/ClearTax/pivotal-lint/) for similar usage with Atlassian's Jira Software.
+> Ported from [pivotal-lint](https://github.com/ClearTax/pivotal-lint/) for similar usage with Atlassian's Jira Software.
 
 ![GitHub package.json version](https://img.shields.io/github/package-json/v/cleartax/jira-lint?style=flat-square)
 [![GitHub](https://img.shields.io/github/license/cleartax/jira-lint?style=flat-square)](https://github.com/cleartax/jira-lint/blob/master/LICENSE.md)
+[![All Contributors](https://img.shields.io/badge/all_contributors-2-orange.svg?style=flat-square)](#contributors)
+![build & test](https://github.com/ClearTax/jira-lint/workflows/lint,%20build%20&%20test/badge.svg)
+
+---
 
 <!-- toc -->
 
-- [Jira-lint 🧹](#jira-lint-%f0%9f%a7%b9)
-  - [Installation](#installation)
-    - [Semantic Versions](#semantic-versions)
-  - [Features](#features)
-    - [PR Status Checks](#pr-status-checks)
-    - [PR Description & Labels](#pr-description--labels)
-      - [Description](#description)
-      - [Labels](#labels)
-      - [Soft-validations via comments](#soft-validations-via-comments)
-    - [Options](#options)
-    - [Skipping branches](#skipping-branches)
-  - [Contributing](#contributing)
-  - [FAQ](#faq)
+- [Installation](#installation)
+  - [Semantic Versions](#semantic-versions)
+- [Features](#features)
+  - [PR Status Checks](#pr-status-checks)
+  - [PR Description & Labels](#pr-description--labels)
+    - [Description](#description)
+    - [Labels](#labels)
+    - [Soft-validations via comments](#soft-validations-via-comments)
+  - [Options](#options)
+  - [`jira-token`](#jira-token)
+  - [Skipping branches](#skipping-branches)
+- [Contributing](#contributing)
+- [FAQ](#faq)
+- [Contributors](#contributors)
 
 <!-- tocstop -->
 
@@ -179,3 +184,25 @@ The key is required in order to:
 </details>
 
 [jira]: https://www.atlassian.com/software/jira
+
+## Contributors
+
+Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/docs/en/emoji-key)):
+
+<!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
+<!-- prettier-ignore-start -->
+<!-- markdownlint-disable -->
+<table>
+  <tr>
+    <td align="center"><a href="http://hacktivist.in"><img src="https://avatars3.githubusercontent.com/u/4851763?v=4" width="100px;" alt=""/><br /><sub><b>Raj Anand</b></sub></a><br /><a href="https://github.com/ClearTax/jira-lint/commits?author=rajanand02" title="Code">💻</a> <a href="https://github.com/ClearTax/jira-lint/pulls?q=is%3Apr+reviewed-by%3Arajanand02" title="Reviewed Pull Requests">👀</a> <a href="#ideas-rajanand02" title="Ideas, Planning, & Feedback">🤔</a></td>
+    <td align="center"><a href="https://aditimohanty.com/?utm_source=github&utm_medium=documentation-allcontributors&utm_content=jira-lint"><img src="https://avatars3.githubusercontent.com/u/6426069?v=4" width="100px;" alt=""/><br /><sub><b>Aditi Mohanty</b></sub></a><br /><a href="https://github.com/ClearTax/jira-lint/commits?author=rheaditi" title="Code">💻</a> <a href="https://github.com/ClearTax/jira-lint/commits?author=rheaditi" title="Documentation">📖</a> <a href="#infra-rheaditi" title="Infrastructure (Hosting, Build-Tools, etc)">🚇</a></td>
+    <td align="center"><a href="https://github.com/dustman9000"><img src="https://avatars0.githubusercontent.com/u/3944352?v=4" width="100px;" alt=""/><br /><sub><b>Dustin Row</b></sub></a><br /><a href="https://github.com/ClearTax/jira-lint/pulls?q=is%3Apr+reviewed-by%3Adustman9000" title="Reviewed Pull Requests">👀</a></td>
+    <td align="center"><a href="https://github.com/richardlhao"><img src="https://avatars1.githubusercontent.com/u/60636550?v=4" width="100px;" alt=""/><br /><sub><b>richardlhao</b></sub></a><br /><a href="https://github.com/ClearTax/jira-lint/commits?author=richardlhao" title="Code">💻</a></td>
+  </tr>
+</table>
+
+<!-- markdownlint-enable -->
+<!-- prettier-ignore-end -->
+<!-- ALL-CONTRIBUTORS-LIST:END -->
+
+This project follows the [all-contributors](https://github.com/all-contributors/all-contributors) specification. Contributions of any kind welcome!

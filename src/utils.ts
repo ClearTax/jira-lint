@@ -2,32 +2,23 @@ import axios from 'axios';
 import * as core from '@actions/core';
 import * as github from '@actions/github';
 import similarity from 'string-similarity';
-import { IssuesAddLabelsParams, PullsUpdateParams, IssuesCreateCommentParams } from '@octokit/rest';
+import { IssuesAddLabelsParams, IssuesCreateCommentParams, PullsUpdateParams } from '@octokit/rest';
 import {
-  MARKER_REGEX,
   BOT_BRANCH_PATTERNS,
   DEFAULT_BRANCH_PATTERNS,
-  JIRA_REGEX_MATCHER,
   HIDDEN_MARKER,
+  JIRA_REGEX_MATCHER,
+  MARKER_REGEX,
 } from './constants';
-import { JIRA, JIRADetails } from './types';
+import { JIRA, JIRAClient, JIRADetails } from './types';
 
-export const isBlank = (input: string) => input.trim().length === 0;
-export const isNotBlank = (input: string) => !isBlank(input);
+export const isBlank = (input: string): boolean => input.trim().length === 0;
+export const isNotBlank = (input: string): boolean => !isBlank(input);
 
-/**
- * Reverse a string
- */
-export const reverseString = (input: string) =>
-  input
-    .split('')
-    .reverse()
-    .join('');
+/** Reverse a string. */
+export const reverseString = (input: string): string => input.split('').reverse().join('');
 
-/**
- * Extract JIRA issue keys from a string
- * @param {string} input
- */
+/** Extract JIRA issue keys from a string. */
 export const getJIRAIssueKeys = (input: string): string[] => {
   const matches = reverseString(input).toUpperCase().match(JIRA_REGEX_MATCHER);
   if (matches?.length) {
@@ -40,26 +31,20 @@ export const LABELS = {
   HOTFIX_PROD: 'HOTFIX-PROD',
 };
 
-/**
- * Return a hotfix label based on base branch type
- * @param {string} baseBranch
- */
+/** Return a hotfix label based on base branch type. */
 export const getHotfixLabel = (baseBranch: string): string => {
   if (baseBranch.startsWith('release/v')) return LABELS.HOTFIX_PRE_PROD;
   if (baseBranch.startsWith('production')) return LABELS.HOTFIX_PROD;
   return '';
 };
 
-export const getJIRAClient = (baseURL: string, token: string) => {
+export const getJIRAClient = (baseURL: string, token: string): JIRAClient => {
   const client = axios.create({
     baseURL: `${baseURL}/rest/api/3`,
     timeout: 2000,
     headers: { Authorization: `Basic ${token}` },
   });
 
-  /**
-   * Get complete issue details
-   */
   const getIssue = async (id: string): Promise<JIRA.Issue> => {
     try {
       const response = await client.get<JIRA.Issue>(
@@ -71,17 +56,14 @@ export const getJIRAClient = (baseURL: string, token: string) => {
     }
   };
 
-  /**
-   * Get required details to display in PR
-   */
-  const getTicketDetails = async (key: string) => {
+  const getTicketDetails = async (key: string): Promise<JIRADetails> => {
     try {
       const issue: JIRA.Issue = await getIssue(key);
       const {
         fields: { issuetype: type, project, summary, customfield_10016: estimate, labels: rawLabels },
       } = issue;
 
-      const labels = rawLabels.map(label => ({
+      const labels = rawLabels.map((label) => ({
         name: label,
         url: `${baseURL}/issues?jql=${encodeURIComponent(
           `project = ${project.key} AND labels = ${label} ORDER BY created DESC`
@@ -101,7 +83,7 @@ export const getJIRAClient = (baseURL: string, token: string) => {
           url: `${baseURL}/browse/${project.key}`,
           key: project.key,
         },
-        estimate,
+        estimate: typeof estimate === 'string' || typeof estimate === 'number' ? estimate : 'N/A',
         labels,
       };
     } catch (e) {
@@ -116,12 +98,8 @@ export const getJIRAClient = (baseURL: string, token: string) => {
   };
 };
 
-/**
- * Add the specified label to the PR
- * @param {github.GitHub} client
- * @param {IssuesAddLabelsParams} labelData
- */
-export const addLabels = async (client: github.GitHub, labelData: IssuesAddLabelsParams) => {
+/** Add the specified label to the PR. */
+export const addLabels = async (client: github.GitHub, labelData: IssuesAddLabelsParams): Promise<void> => {
   try {
     await client.issues.addLabels(labelData);
   } catch (error) {
@@ -130,12 +108,8 @@ export const addLabels = async (client: github.GitHub, labelData: IssuesAddLabel
   }
 };
 
-/**
- *  Update a PR details
- * @param {github.GitHub} client
- * @param {PullsUpdateParams} prData
- */
-export const updatePrDetails = async (client: github.GitHub, prData: PullsUpdateParams) => {
+/** Update a PR details. */
+export const updatePrDetails = async (client: github.GitHub, prData: PullsUpdateParams): Promise<void> => {
   try {
     await client.pulls.update(prData);
   } catch (error) {
@@ -144,12 +118,8 @@ export const updatePrDetails = async (client: github.GitHub, prData: PullsUpdate
   }
 };
 
-/**
- *  Add a comment to a PR
- * @param {github.GitHub} client
- * @param {IssuesCreateCommentParams} comment
- */
-export const addComment = async (client: github.GitHub, comment: IssuesCreateCommentParams) => {
+/** Add a comment to a PR. */
+export const addComment = async (client: github.GitHub, comment: IssuesCreateCommentParams): Promise<void> => {
   try {
     await client.issues.createComment(comment);
   } catch (error) {
@@ -157,9 +127,7 @@ export const addComment = async (client: github.GitHub, comment: IssuesCreateCom
   }
 };
 
-/**
- *  Get a comment based on story title and PR title similarity
- */
+/** Get a comment based on story title and PR title similarity. */
 export const getPRTitleComment = (storyTitle: string, prTitle: string, skipGifs: string): string => {
   const matchRange: number = similarity.compareTwoStrings(storyTitle, prTitle);
   if (matchRange < 0.2) {
@@ -210,29 +178,29 @@ export const getPRTitleComment = (storyTitle: string, prTitle: string, skipGifs:
     `;
   }
 
-  let s = `<p>I'm a bot and I 👍 this PR title. 🤖</p>`;
+  let content = `<p>I'm a bot and I 👍 this PR title. 🤖</p>`;
   if (skipGifs !== 'true') {
-    s += `
+    content += `
     
     <img src="https://media.giphy.com/media/XreQmk7ETCak0/giphy.gif" width="400" />`;
   }
-  return s
+  return content;
 };
 
 /**
  * Check if the PR is an automated one created by a bot or one matching ignore patterns supplied
  * via action metadata.
- * @param {string} branch
+ *
  * @example shouldSkipBranchLint('dependabot') -> true
  * @example shouldSkipBranchLint('feature/update_123456789') -> false
  */
 export const shouldSkipBranchLint = (branch: string, additionalIgnorePattern?: string): boolean => {
-  if (BOT_BRANCH_PATTERNS.some(pattern => pattern.test(branch))) {
+  if (BOT_BRANCH_PATTERNS.some((pattern) => pattern.test(branch))) {
     console.log(`You look like a bot 🤖 so we're letting you off the hook!`);
     return true;
   }
 
-  if (DEFAULT_BRANCH_PATTERNS.some(pattern => pattern.test(branch))) {
+  if (DEFAULT_BRANCH_PATTERNS.some((pattern) => pattern.test(branch))) {
     console.log(`Ignoring check for default branch ${branch}`);
     return true;
   }
@@ -268,14 +236,12 @@ export const getLabelsForDisplay = (labels: JIRADetails['labels']): string => {
   if (!labels || !labels.length) {
     return '-';
   }
-  const markUp = labels.map(label => `<a href="${label.url}" title="${label.name}">${label.name}</a>`).join(', ');
+  const markUp = labels.map((label) => `<a href="${label.url}" title="${label.name}">${label.name}</a>`).join(', ');
   return markUp.replace(/\s+/, ' ');
-}
+};
 
-/**
- * Get PR description with story/issue details
- */
-export const getPRDescription = (body: string = '', details: JIRADetails): string => {
+/** Get PR description with story/issue details. */
+export const getPRDescription = (body = '', details: JIRADetails): string => {
   const displayKey = details.key.toUpperCase();
 
   return `
@@ -314,26 +280,25 @@ export const getPRDescription = (body: string = '', details: JIRADetails): strin
 ${body}`;
 };
 
-/**
- * Check if a PR is huge
- * @param {number} addtions
- * @return {boolean}
- */
-export const isHumongousPR = (additions: number, threshold: number): boolean => additions > threshold;
+/** Check if a PR is considered "huge". */
+export const isHumongousPR = (additions: number, threshold: number): boolean =>
+  typeof additions === 'number' && additions > threshold;
 
-/**
- * Get the comment body for very huge PR
- * @param {number} files
- * @param {number} addtions
- * @return {string}
- */
-export const getHugePrComment = (additions: number, threshold: number, skipGifs: string): string => {
-  let s = `<p>This PR is too huge for one to review :broken_heart: </p>`
-  if (skipGifs !== 'true') {
-    s += `
-    <img src="https://media.giphy.com/media/26tPskka6guetcHle/giphy.gif" width="400" />`
+/** Get the comment body for very huge PR. */
+export const getHugePrComment = (
+  /** Number of additions. */
+  additions: number,
+  /** Threshold of additions allowed. */
+  threshold: number,
+  /** Skip displaying gifs. */
+  skipGifs: boolean
+): string => {
+  let content = `<p>This PR is too huge for one to review :broken_heart: </p>`;
+  if (!skipGifs) {
+    content += `
+    <img src="https://media.giphy.com/media/26tPskka6guetcHle/giphy.gif" width="400" />`;
   }
-  s += `
+  content += `
     <table>
       <tr>
           <th>Additions</th>
@@ -351,15 +316,11 @@ export const getHugePrComment = (additions: number, threshold: number, skipGifs:
       Check out this <a href="https://www.atlassian.com/blog/git/written-unwritten-guide-pull-requests">guide</a> to learn more about PR best-practices.
     </p>
   `;
-  return s
+  return content;
 };
 
-/**
- * Get the comment body for pr with no JIRA id in the branch name
- * @param {string} branch
- * @return {string}
- */
-export const getNoIdComment = (branch: string) => {
+/** Get the comment body for pr with no JIRA id in the branch name. */
+export const getNoIdComment = (branch: string): string => {
   return `<p> A JIRA Issue ID is missing from your branch name! 🦄</p>
 <p>Your branch: ${branch}</p>
 <p>If this is your first time contributing to this repository - welcome!</p>
@@ -373,9 +334,3 @@ Valid sample branch names:
   ‣ 'bugfix/fix-some-strange-bug_GAL-2345'
 `;
 };
-
-/**
- * Return true if skip-comments is set to false
- * @param {string} skipConfig
- */
-export const shouldAddComments = (skipConfig: string) => skipConfig !== 'true';
