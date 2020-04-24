@@ -216,19 +216,19 @@ describe('getNoIdComment()', () => {
 
 describe('getHugePrComment()', () => {
   it('should return the comment content with additions and threshold', () => {
-    expect(getHugePrComment(1000, 800, 'true')).toContain(1000);
-    expect(getHugePrComment(1000, 800, 'true')).toContain(800);
+    expect(getHugePrComment(1000, 800, true)).toContain(1000);
+    expect(getHugePrComment(1000, 800, true)).toContain(800);
   });
   it('should return no gifs if they are skipped', () => {
-    expect(getHugePrComment(1000, 800, 'true')).not.toContain('giphy.com');
-    expect(getHugePrComment(1000, 800, 'false')).toContain('giphy.com');
+    expect(getHugePrComment(1000, 800, true)).not.toContain('giphy.com');
+    expect(getHugePrComment(1000, 800, false)).toContain('giphy.com');
   });
 });
 
 describe('getPRTitleComment()', () => {
   it('should return no gifs if they are skipped', () => {
-    expect(getPRTitleComment('title', 'title', 'true')).not.toContain('giphy.com');
-    expect(getPRTitleComment('title', 'title', 'false')).toContain('giphy.com');
+    expect(getPRTitleComment('title', 'title', true)).not.toContain('giphy.com');
+    expect(getPRTitleComment('title', 'title', false)).toContain('giphy.com');
   });
 });
 

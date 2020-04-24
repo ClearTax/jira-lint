@@ -27,7 +27,7 @@ const getInputs = (): JIRALintActionInputs => {
   const GITHUB_TOKEN: string = core.getInput('github-token', { required: true });
   const BRANCH_IGNORE_PATTERN: string = core.getInput('skip-branches', { required: false }) || '';
   const SKIP_COMMENTS: boolean = core.getInput('skip-comments', { required: false }) === 'true';
-  const SKIP_GIFS: string = core.getInput('skip-gifs', { required: false }) || 'false';
+  const SKIP_GIFS: boolean = core.getInput('skip-gifs', { required: false }) === 'true';
   const PR_THRESHOLD = parseInt(core.getInput('pr-threshold', { required: false }), 10);
 
   return {

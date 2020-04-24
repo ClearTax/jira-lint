@@ -128,7 +128,7 @@ export const addComment = async (client: github.GitHub, comment: IssuesCreateCom
 };
 
 /** Get a comment based on story title and PR title similarity. */
-export const getPRTitleComment = (storyTitle: string, prTitle: string, skipGifs: string): string => {
+export const getPRTitleComment = (storyTitle: string, prTitle: string, skipGifs: boolean): string => {
   const matchRange: number = similarity.compareTwoStrings(storyTitle, prTitle);
   if (matchRange < 0.2) {
     return `<p>
@@ -178,13 +178,13 @@ export const getPRTitleComment = (storyTitle: string, prTitle: string, skipGifs:
     `;
   }
 
-  let content = `<p>I'm a bot and I 👍 this PR title. 🤖</p>`;
-  if (skipGifs !== 'true') {
-    content += `
+  let title = `<p>I'm a bot and I 👍 this PR title. 🤖</p>`;
+  if (!skipGifs) {
+    title += `
     
     <img src="https://media.giphy.com/media/XreQmk7ETCak0/giphy.gif" width="400" />`;
   }
-  return content;
+  return title;
 };
 
 /**
@@ -293,12 +293,12 @@ export const getHugePrComment = (
   /** Skip displaying gifs. */
   skipGifs: boolean
 ): string => {
-  let content = `<p>This PR is too huge for one to review :broken_heart: </p>`;
+  let comment = `<p>This PR is too huge for one to review :broken_heart: </p>`;
   if (!skipGifs) {
-    content += `
+    comment += `
     <img src="https://media.giphy.com/media/26tPskka6guetcHle/giphy.gif" width="400" />`;
   }
-  content += `
+  comment += `
     <table>
       <tr>
           <th>Additions</th>
@@ -316,7 +316,7 @@ export const getHugePrComment = (
       Check out this <a href="https://www.atlassian.com/blog/git/written-unwritten-guide-pull-requests">guide</a> to learn more about PR best-practices.
     </p>
   `;
-  return content;
+  return comment;
 };
 
 /** Get the comment body for pr with no JIRA id in the branch name. */
