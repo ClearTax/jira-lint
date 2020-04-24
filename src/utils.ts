@@ -2,15 +2,15 @@ import axios from 'axios';
 import * as core from '@actions/core';
 import * as github from '@actions/github';
 import similarity from 'string-similarity';
-import { IssuesAddLabelsParams, IssuesCreateCommentParams, PullsUpdateParams } from '@octokit/rest';
+import { IssuesAddLabelsParams, PullsUpdateParams, IssuesCreateCommentParams } from '@octokit/rest';
 import {
+  MARKER_REGEX,
   BOT_BRANCH_PATTERNS,
   DEFAULT_BRANCH_PATTERNS,
-  HIDDEN_MARKER,
   JIRA_REGEX_MATCHER,
-  MARKER_REGEX,
+  HIDDEN_MARKER,
 } from './constants';
-import { JIRA, JIRAClient, JIRADetails } from './types';
+import { JIRA, JIRADetails, JIRAClient } from './types';
 
 export const isBlank = (input: string): boolean => input.trim().length === 0;
 export const isNotBlank = (input: string): boolean => !isBlank(input);
