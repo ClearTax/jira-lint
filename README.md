@@ -46,7 +46,7 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           jira-token: ${{ secrets.JIRA_TOKEN }}
-          jira-token: https://your-domain.atlassian.net
+          jira-base-url: https://your-domain.atlassian.net
           skip-branches: '^(production-release|master|release\/v\d+)$'
           skip-comments: true
           pr-threshold: 1000
