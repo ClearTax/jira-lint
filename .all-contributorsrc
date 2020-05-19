@@ -53,6 +53,15 @@
       "contributions": [
         "doc"
       ]
+    },
+    {
+      "login": "lwaddicor",
+      "name": "Lewis Waddicor",
+      "avatar_url": "https://avatars2.githubusercontent.com/u/10589338?v=4",
+      "profile": "https://github.com/lwaddicor",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "contributorsPerLine": 7,
@@ -60,5 +69,6 @@
   "projectOwner": "ClearTax",
   "repoType": "github",
   "repoHost": "https://github.com",
-  "skipCi": true
+  "skipCi": true,
+  "commitConvention": "none"
 }
