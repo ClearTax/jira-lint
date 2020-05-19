@@ -199,6 +199,7 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
     <td align="center"><a href="https://github.com/dustman9000"><img src="https://avatars0.githubusercontent.com/u/3944352?v=4" width="100px;" alt=""/><br /><sub><b>Dustin Row</b></sub></a><br /><a href="https://github.com/ClearTax/jira-lint/pulls?q=is%3Apr+reviewed-by%3Adustman9000" title="Reviewed Pull Requests">👀</a></td>
     <td align="center"><a href="https://github.com/richardlhao"><img src="https://avatars1.githubusercontent.com/u/60636550?v=4" width="100px;" alt=""/><br /><sub><b>richardlhao</b></sub></a><br /><a href="https://github.com/ClearTax/jira-lint/commits?author=richardlhao" title="Code">💻</a></td>
     <td align="center"><a href="https://www.nimeshjm.com/"><img src="https://avatars3.githubusercontent.com/u/2178497?v=4" width="100px;" alt=""/><br /><sub><b>Nimesh Manmohanlal</b></sub></a><br /><a href="https://github.com/ClearTax/jira-lint/commits?author=nimeshjm" title="Documentation">📖</a></td>
+    <td align="center"><a href="https://github.com/lwaddicor"><img src="https://avatars2.githubusercontent.com/u/10589338?v=4" width="100px;" alt=""/><br /><sub><b>Lewis Waddicor</b></sub></a><br /><a href="https://github.com/ClearTax/jira-lint/commits?author=lwaddicor" title="Code">💻</a></td>
   </tr>
 </table>
 
