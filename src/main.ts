@@ -27,7 +27,6 @@ const getInputs = (): JIRALintActionInputs => {
   const GITHUB_TOKEN: string = core.getInput('github-token', { required: true });
   const BRANCH_IGNORE_PATTERN: string = core.getInput('skip-branches', { required: false }) || '';
   const SKIP_COMMENTS: boolean = core.getInput('skip-comments', { required: false }) === 'true';
-  const SKIP_GIFS: boolean = core.getInput('skip-gifs', { required: false }) === 'true';
   const PR_THRESHOLD = parseInt(core.getInput('pr-threshold', { required: false }), 10);
 
   return {
@@ -35,7 +34,6 @@ const getInputs = (): JIRALintActionInputs => {
     GITHUB_TOKEN,
     BRANCH_IGNORE_PATTERN,
     SKIP_COMMENTS,
-    SKIP_GIFS,
     PR_THRESHOLD: isNaN(PR_THRESHOLD) ? DEFAULT_PR_ADDITIONS_THRESHOLD : PR_THRESHOLD,
     JIRA_BASE_URL: JIRA_BASE_URL.endsWith('/') ? JIRA_BASE_URL.replace(/\/$/, '') : JIRA_BASE_URL,
   };
@@ -43,15 +41,7 @@ const getInputs = (): JIRALintActionInputs => {
 
 async function run(): Promise<void> {
   try {
-    const {
-      JIRA_TOKEN,
-      JIRA_BASE_URL,
-      GITHUB_TOKEN,
-      BRANCH_IGNORE_PATTERN,
-      SKIP_COMMENTS,
-      SKIP_GIFS,
-      PR_THRESHOLD,
-    } = getInputs();
+    const { JIRA_TOKEN, JIRA_BASE_URL, GITHUB_TOKEN, BRANCH_IGNORE_PATTERN, SKIP_COMMENTS, PR_THRESHOLD } = getInputs();
 
     const defaultAdditionsCount = 800;
     const prThreshold: number = PR_THRESHOLD ? Number(PR_THRESHOLD) : defaultAdditionsCount;
@@ -153,7 +143,7 @@ async function run(): Promise<void> {
         if (!SKIP_COMMENTS) {
           const prTitleComment: IssuesCreateCommentParams = {
             ...commonPayload,
-            body: getPRTitleComment(details.summary, title, SKIP_GIFS),
+            body: getPRTitleComment(details.summary, title),
           };
           console.log('Adding comment for the PR title');
           addComment(client, prTitleComment);
@@ -162,7 +152,7 @@ async function run(): Promise<void> {
           if (isHumongousPR(additions, prThreshold)) {
             const hugePrComment: IssuesCreateCommentParams = {
               ...commonPayload,
-              body: getHugePrComment(additions, prThreshold, SKIP_GIFS),
+              body: getHugePrComment(additions, prThreshold),
             };
             console.log('Adding comment for huge PR');
             addComment(client, hugePrComment);
