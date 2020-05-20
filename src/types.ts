@@ -116,7 +116,6 @@ export interface JIRALintActionInputs {
   GITHUB_TOKEN: string;
   BRANCH_IGNORE_PATTERN: string;
   SKIP_COMMENTS: boolean;
-  SKIP_GIFS: boolean;
   PR_THRESHOLD: number;
 }
 

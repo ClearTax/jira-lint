@@ -128,7 +128,7 @@ export const addComment = async (client: github.GitHub, comment: IssuesCreateCom
 };
 
 /** Get a comment based on story title and PR title similarity. */
-export const getPRTitleComment = (storyTitle: string, prTitle: string, skipGifs: boolean): string => {
+export const getPRTitleComment = (storyTitle: string, prTitle: string): string => {
   const matchRange: number = similarity.compareTwoStrings(storyTitle, prTitle);
   if (matchRange < 0.2) {
     return `<p>
@@ -177,14 +177,9 @@ export const getPRTitleComment = (storyTitle: string, prTitle: string, skipGifs:
     </p>
     `;
   }
+  return `<p>I'm a bot and I 👍 this PR title. 🤖</p>
 
-  let title = `<p>I'm a bot and I 👍 this PR title. 🤖</p>`;
-  if (!skipGifs) {
-    title += `
-    
-    <img src="https://media.giphy.com/media/XreQmk7ETCak0/giphy.gif" width="400" />`;
-  }
-  return title;
+  <img src="https://media.giphy.com/media/XreQmk7ETCak0/giphy.gif" width="400" />`;
 };
 
 /**
@@ -289,16 +284,10 @@ export const getHugePrComment = (
   /** Number of additions. */
   additions: number,
   /** Threshold of additions allowed. */
-  threshold: number,
-  /** Skip displaying gifs. */
-  skipGifs: boolean
-): string => {
-  let comment = `<p>This PR is too huge for one to review :broken_heart: </p>`;
-  if (!skipGifs) {
-    comment += `
-    <img src="https://media.giphy.com/media/26tPskka6guetcHle/giphy.gif" width="400" />`;
-  }
-  comment += `
+  threshold: number
+): string =>
+  `<p>This PR is too huge for one to review :broken_heart: </p>
+  <img src="https://media.giphy.com/media/26tPskka6guetcHle/giphy.gif" width="400" />
     <table>
       <tr>
           <th>Additions</th>
@@ -316,8 +305,6 @@ export const getHugePrComment = (
       Check out this <a href="https://www.atlassian.com/blog/git/written-unwritten-guide-pull-requests">guide</a> to learn more about PR best-practices.
     </p>
   `;
-  return comment;
-};
 
 /** Get the comment body for pr with no JIRA id in the branch name. */
 export const getNoIdComment = (branch: string): string => {
