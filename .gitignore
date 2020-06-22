@@ -13,8 +13,9 @@ node_modules
 # local file for testing
 src/localTest.ts
 
-# vs code custom settings
+# IDE code custom settings
 .vscode
+.idea
 
 # Diagnostic reports (https://nodejs.org/api/report.html)
 report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
