@@ -2,15 +2,15 @@ import axios from 'axios';
 import * as core from '@actions/core';
 import * as github from '@actions/github';
 import similarity from 'string-similarity';
-import { IssuesAddLabelsParams, PullsUpdateParams, IssuesCreateCommentParams } from '@octokit/rest';
+import { IssuesAddLabelsParams, IssuesCreateCommentParams, PullsUpdateParams } from '@octokit/rest';
 import {
-  MARKER_REGEX,
   BOT_BRANCH_PATTERNS,
   DEFAULT_BRANCH_PATTERNS,
-  JIRA_REGEX_MATCHER,
   HIDDEN_MARKER,
+  JIRA_REGEX_MATCHER,
+  MARKER_REGEX,
 } from './constants';
-import { JIRA, JIRADetails, JIRAClient } from './types';
+import { JIRA, JIRAClient, JIRADetails } from './types';
 
 export const isBlank = (input: string): boolean => input.trim().length === 0;
 export const isNotBlank = (input: string): boolean => !isBlank(input);
@@ -19,11 +19,16 @@ export const isNotBlank = (input: string): boolean => !isBlank(input);
 export const reverseString = (input: string): string => input.split('').reverse().join('');
 
 /** Extract JIRA issue keys from a string. */
-export const getJIRAIssueKeys = (input: string): string[] => {
-  const matches = input.toUpperCase().match(JIRA_REGEX_MATCHER);
+export const getJIRAIssueKeys = (input: string, regexp: RegExp = JIRA_REGEX_MATCHER): string[] => {
+  const matches = input.toUpperCase().match(regexp);
   if (matches?.length) {
     return matches;
   } else return [];
+};
+
+/** Extract JIRA issue keys from a string. */
+export const getJIRAIssueKeysByCustomRegexp = (input: string, keyRegexp: string, project: string): string[] => {
+  return getJIRAIssueKeys(input, new RegExp(keyRegexp, 'g')).map((ticketNumber) => `${project}-${ticketNumber}`);
 };
 
 export const LABELS = {

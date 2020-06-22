@@ -1,7 +1,9 @@
 import {
   getHotfixLabel,
   getHugePrComment,
+  getJIRAClient,
   getJIRAIssueKeys,
+  getJIRAIssueKeysByCustomRegexp,
   getLabelsForDisplay,
   getNoIdComment,
   getPRDescription,
@@ -9,7 +11,6 @@ import {
   LABELS,
   shouldSkipBranchLint,
   shouldUpdatePRDescription,
-  getJIRAClient,
 } from '../src/utils';
 import { HIDDEN_MARKER } from '../src/constants';
 import { JIRADetails } from '../src/types';
@@ -120,6 +121,17 @@ describe('getJIRAIssueKeys()', () => {
 
     expect(getJIRAIssueKeys('feature/missingKey')).toEqual([]);
     expect(getJIRAIssueKeys('')).toEqual([]);
+  });
+});
+
+describe('getJIRAIssueKeys()', () => {
+  it('gets multiple keys from a string using provided regexp', () => {
+    expect(getJIRAIssueKeysByCustomRegexp('18,345', '\\d+', 'PRJ')).toEqual(['PRJ-18', 'PRJ-345']);
+  });
+
+  it('gets jira keys from different branch names', () => {
+    expect(getJIRAIssueKeysByCustomRegexp('fix/login-protocol-es-43', '^\\d+', 'QQ')).toEqual([]);
+    expect(getJIRAIssueKeysByCustomRegexp('43-login-protocol', '^\\d+', 'QQ')).toEqual(['QQ-43']);
   });
 });
 
