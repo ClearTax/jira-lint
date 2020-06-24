@@ -21,14 +21,16 @@ export const reverseString = (input: string): string => input.split('').reverse(
 /** Extract JIRA issue keys from a string. */
 export const getJIRAIssueKeys = (input: string, regexp: RegExp = JIRA_REGEX_MATCHER): string[] => {
   const matches = input.toUpperCase().match(regexp);
+
   if (matches?.length) {
     return matches;
   } else return [];
 };
 
 /** Extract JIRA issue keys from a string. */
-export const getJIRAIssueKeysByCustomRegexp = (input: string, keyRegexp: string, project: string): string[] => {
-  return getJIRAIssueKeys(input, new RegExp(keyRegexp, 'g')).map((ticketNumber) => `${project}-${ticketNumber}`);
+export const getJIRAIssueKeysByCustomRegexp = (input: string, numberRegexp: string, projectKey: string): string[] => {
+  const customRegexp = new RegExp(numberRegexp);
+  return getJIRAIssueKeys(input, customRegexp).map((ticketNumber) => `${projectKey}-${ticketNumber}`);
 };
 
 export const LABELS = {

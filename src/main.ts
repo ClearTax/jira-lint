@@ -1,6 +1,6 @@
 import * as core from '@actions/core';
 import * as github from '@actions/github';
-import { PullsUpdateParams, IssuesCreateCommentParams } from '@octokit/rest';
+import { IssuesCreateCommentParams, PullsUpdateParams } from '@octokit/rest';
 
 import {
   addComment,
@@ -9,6 +9,7 @@ import {
   getHugePrComment,
   getJIRAClient,
   getJIRAIssueKeys,
+  getJIRAIssueKeysByCustomRegexp,
   getNoIdComment,
   getPRDescription,
   getPRTitleComment,
@@ -18,7 +19,7 @@ import {
   shouldUpdatePRDescription,
   updatePrDetails,
 } from './utils';
-import { PullRequestParams, JIRADetails, JIRALintActionInputs } from './types';
+import { JIRADetails, JIRALintActionInputs, PullRequestParams } from './types';
 import { DEFAULT_PR_ADDITIONS_THRESHOLD } from './constants';
 
 const getInputs = (): JIRALintActionInputs => {
@@ -28,12 +29,16 @@ const getInputs = (): JIRALintActionInputs => {
   const BRANCH_IGNORE_PATTERN: string = core.getInput('skip-branches', { required: false }) || '';
   const SKIP_COMMENTS: boolean = core.getInput('skip-comments', { required: false }) === 'true';
   const PR_THRESHOLD = parseInt(core.getInput('pr-threshold', { required: false }), 10);
+  const CUSTOM_ISSUE_NUMBER_REGEXP = core.getInput('custom-issue-number-regexp', { required: false });
+  const JIRA_PROJECT_KEY = core.getInput('jira-project-key', { required: false });
 
   return {
     JIRA_TOKEN,
     GITHUB_TOKEN,
     BRANCH_IGNORE_PATTERN,
     SKIP_COMMENTS,
+    JIRA_PROJECT_KEY,
+    CUSTOM_ISSUE_NUMBER_REGEXP,
     PR_THRESHOLD: isNaN(PR_THRESHOLD) ? DEFAULT_PR_ADDITIONS_THRESHOLD : PR_THRESHOLD,
     JIRA_BASE_URL: JIRA_BASE_URL.endsWith('/') ? JIRA_BASE_URL.replace(/\/$/, '') : JIRA_BASE_URL,
   };
@@ -41,7 +46,16 @@ const getInputs = (): JIRALintActionInputs => {
 
 async function run(): Promise<void> {
   try {
-    const { JIRA_TOKEN, JIRA_BASE_URL, GITHUB_TOKEN, BRANCH_IGNORE_PATTERN, SKIP_COMMENTS, PR_THRESHOLD } = getInputs();
+    const {
+      JIRA_TOKEN,
+      JIRA_BASE_URL,
+      GITHUB_TOKEN,
+      BRANCH_IGNORE_PATTERN,
+      SKIP_COMMENTS,
+      PR_THRESHOLD,
+      JIRA_PROJECT_KEY,
+      CUSTOM_ISSUE_NUMBER_REGEXP,
+    } = getInputs();
 
     const defaultAdditionsCount = 800;
     const prThreshold: number = PR_THRESHOLD ? Number(PR_THRESHOLD) : defaultAdditionsCount;
@@ -98,8 +112,15 @@ async function run(): Promise<void> {
     if (shouldSkipBranchLint(headBranch, BRANCH_IGNORE_PATTERN)) {
       process.exit(0);
     }
+    const shouldUseCustomRegexp = !!CUSTOM_ISSUE_NUMBER_REGEXP && !!JIRA_PROJECT_KEY;
+    console.log('shouldUseCustomRegexp -> ', shouldUseCustomRegexp, CUSTOM_ISSUE_NUMBER_REGEXP, JIRA_PROJECT_KEY);
 
-    const issueKeys = getJIRAIssueKeys(headBranch);
+    const issueKeys = shouldUseCustomRegexp
+      ? getJIRAIssueKeysByCustomRegexp(headBranch, CUSTOM_ISSUE_NUMBER_REGEXP, JIRA_PROJECT_KEY)
+      : getJIRAIssueKeys(headBranch);
+
+    console.log(issueKeys);
+
     if (!issueKeys.length) {
       const comment: IssuesCreateCommentParams = {
         ...commonPayload,

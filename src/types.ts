@@ -117,6 +117,8 @@ export interface JIRALintActionInputs {
   BRANCH_IGNORE_PATTERN: string;
   SKIP_COMMENTS: boolean;
   PR_THRESHOLD: number;
+  JIRA_PROJECT_KEY: string;
+  CUSTOM_ISSUE_NUMBER_REGEXP: string;
 }
 
 export interface JIRAClient {

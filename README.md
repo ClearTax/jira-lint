@@ -49,6 +49,8 @@ jobs:
           jira-base-url: https://your-domain.atlassian.net
           skip-branches: '^(production-release|master|release\/v\d+)$'
           skip-comments: true
+          custom-issue-number-regexp: '^\d+' #optional
+          jira-project-name: 'PRJ' #optional    
           pr-threshold: 1000
 ```
 
@@ -132,14 +134,16 @@ When a PR passes the above check, `jira-lint` will also add the issue details to
 
 ### Options
 
-| key             | description                                                                                                                                                                                                                                                                                                        | required | default |
-| --------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | -------- | ------- |
-| `github-token`  | Token used to update PR description. `GITHUB_TOKEN` is already available [when you use GitHub actions](https://help.github.com/en/actions/automating-your-workflow-with-github-actions/authenticating-with-the-github_token#about-the-github_token-secret), so all that is required is to pass it as a param here. | true     | null    |
-| `jira-token`    | Token used to fetch Jira Issue information.  Check [below](#jira-token) for more details on how to generate the token.                                                                                                          | true     | null    |
-| `jira-base-url` | The subdomain of JIRA cloud that you use to access it. Ex: "https://your-domain.atlassian.net".                                                                                                                                                                                                                    | true     | null    |
-| `skip-branches` | A regex to ignore running `jira-lint` on certain branches, like production etc.                                                                                                                                                                                                                                    | false    | ' '     |
-| `skip-comments` | A `Boolean` if set to `true` then `jira-lint` will skip adding lint comments for PR title.                                                                                                                                                                                                                         | false    | false   |
-| `pr-threshold`  | An `Integer` based on which `jira-lint` will add a comment discouraging huge PRs.                                                                                                                                                                                                                                  | false    | 800     |
+| key                    | description                                                                                                                                                                                                                                                                                                        | required | default |
+| ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | -------- | ------- |
+| `github-token`         | Token used to update PR description. `GITHUB_TOKEN` is already available [when you use GitHub actions](https://help.github.com/en/actions/automating-your-workflow-with-github-actions/authenticating-with-the-github_token#about-the-github_token-secret), so all that is required is to pass it as a param here. | true     | null    |
+| `jira-token`           | Token used to fetch Jira Issue information.  Check [below](#jira-token) for more details on how to generate the token.                                                                                                          | true     | null    |
+| `jira-base-url`        | The subdomain of JIRA cloud that you use to access it. Ex: "https://your-domain.atlassian.net".                                                                                                                                                                                                                    | true     | null    |
+| `skip-branches`        | A regex to ignore running `jira-lint` on certain branches, like production etc.                                                                                                                                                                                                                                    | false    | ' '     |
+| `skip-comments`        | A `Boolean` if set to `true` then `jira-lint` will skip adding lint comments for PR title.                                                                                                                                                                                                                         | false    | false   |
+| `pr-threshold`         | An `Integer` based on which `jira-lint` will add a comment discouraging huge PRs.                                                                                                                                                                                                                                  | false    | 800     |
+| `jira-project-key`     | Key of project in jira. First part of issue key | false    | none     |
+| `custom-issue-number-regexp` | Custom regexp to extract issue number from branch name. If not specified, default regexp would be used.  | false    | none     |
 
 Since tokens are private, we suggest adding them as [GitHub secrets](https://help.github.com/en/actions/automating-your-workflow-with-github-actions/creating-and-using-encrypted-secrets).
 
@@ -159,6 +163,26 @@ Since GitHub actions take string inputs, `skip-branches` must be a regex which w
 
 `jira-lint` already skips PRs which are filed by bots (for eg. [dependabot](https://github.com/marketplace/dependabot-preview)). You can add more bots to [this list](https://github.com/ClearTax/jira-lint/blob/08a47ab7a6e2bc235c9e34da1d14eacf9d810bd1/src/constants.ts#L4), or add the branch-format followed by the bot PRs to the `skip-branches` option.
 
+### Using custom regex
+
+By default full name of issue is searched in branch number using regexp `/([a-zA-Z0-9]{1,10})-(\d+)/g;`. For example
+```
+bugfix/prj-15-click -> PRJ-15
+prj-15-bugfix-17 -> PRJ-17
+15-bugfix -> nothing found
+``` 
+check for more [in tests](__tests__/utils.test.ts#106)
+
+If you don't use full keys in branch names, you can specify optional parameters to compute issue keys:
+```
+jira-project-key: 'MYPROJ'
+custom-issue-number-regexp: '\d+' 
+```
+```
+bugfix/prj-15-click -> MYPROJ-15
+prj-15-bugfix-17 -> MYPROJ-15
+15-bugfix -> MYPROJ-15
+```
 ## Contributing
 
 Follow the instructions [here](https://help.github.com/en/articles/creating-a-javascript-action#commit-and-push-your-action-to-github) to know more about GitHub actions.
