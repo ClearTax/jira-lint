@@ -113,13 +113,10 @@ async function run(): Promise<void> {
       process.exit(0);
     }
     const shouldUseCustomRegexp = !!CUSTOM_ISSUE_NUMBER_REGEXP && !!JIRA_PROJECT_KEY;
-    console.log('shouldUseCustomRegexp -> ', shouldUseCustomRegexp, CUSTOM_ISSUE_NUMBER_REGEXP, JIRA_PROJECT_KEY);
 
     const issueKeys = shouldUseCustomRegexp
       ? getJIRAIssueKeysByCustomRegexp(headBranch, CUSTOM_ISSUE_NUMBER_REGEXP, JIRA_PROJECT_KEY)
       : getJIRAIssueKeys(headBranch);
-
-    console.log(issueKeys);
 
     if (!issueKeys.length) {
       const comment: IssuesCreateCommentParams = {

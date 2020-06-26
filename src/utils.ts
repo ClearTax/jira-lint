@@ -29,7 +29,7 @@ export const getJIRAIssueKeys = (input: string, regexp: RegExp = JIRA_REGEX_MATC
 
 /** Extract JIRA issue keys from a string. */
 export const getJIRAIssueKeysByCustomRegexp = (input: string, numberRegexp: string, projectKey: string): string[] => {
-  const customRegexp = new RegExp(numberRegexp);
+  const customRegexp = new RegExp(numberRegexp, 'g');
   return getJIRAIssueKeys(input, customRegexp).map((ticketNumber) => `${projectKey}-${ticketNumber}`);
 };
 
