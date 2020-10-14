@@ -183,12 +183,14 @@ describe('getPRDescription()', () => {
       labels: [{ name: 'frontend', url: 'frontend-url' }],
       summary: 'Story title or summary',
       project: { name: 'project', url: 'project-url', key: 'abc' },
+      status: 'In Progress',
     };
     const description = getPRDescription('some_body', issue);
 
     expect(shouldUpdatePRDescription(description)).toBeFalsy();
     expect(description).toContain(issue.key);
     expect(description).toContain(issue.estimate);
+    expect(description).toContain(issue.status);
     expect(description).toContain(issue.labels[0].name);
   });
 });

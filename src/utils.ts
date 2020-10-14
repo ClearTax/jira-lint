@@ -74,6 +74,7 @@ export const getJIRAClient = (baseURL: string, token: string): JIRAClient => {
         key,
         summary,
         url: `${baseURL}/browse/${key}`,
+        status: issue.fields.status.name,
         type: {
           name: type.name,
           icon: type.iconUrl,
@@ -254,6 +255,10 @@ export const getPRDescription = (body = '', details: JIRADetails): string => {
         <img alt="${details.type.name}" src="${details.type.icon}" />
         ${details.type.name}
       </td>
+    </tr>
+    <tr>
+      <th>Status</th>
+      <td>${details.status}</td>
     </tr>
     <tr>
       <th>Points</th>

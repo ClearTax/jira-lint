@@ -81,6 +81,7 @@ export namespace JIRA {
     id: string;
     key: string;
     self: string;
+    status: string;
     fields: {
       summary: string;
       status: IssueStatus;
@@ -97,6 +98,7 @@ export interface JIRADetails {
   key: string;
   summary: string;
   url: string;
+  status: string;
   type: {
     name: string;
     icon: string;
