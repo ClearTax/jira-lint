@@ -326,3 +326,45 @@ Valid sample branch names:
   ‣ 'bugfix/fix-some-strange-bug_GAL-2345'
 `;
 };
+
+/** Check if jira issue status validation is enabled then compare the issue status will the allowed statuses. */
+export const isIssueStatusValid = (
+  shouldValidate: boolean,
+  allowedIssueStatuses: string[],
+  details: JIRADetails
+): boolean => {
+  if (!shouldValidate) {
+    core.info('Skipping Jira issue status validation as shouldValidate is false');
+    return true;
+  }
+
+  if (allowedIssueStatuses.includes(details.status)) {
+    return true;
+  } else {
+    return false;
+  }
+};
+
+/** Get the comment body for very huge PR. */
+export const getInvalidIssueStatusComment = (
+  /** Number of additions. */
+  issueStatus: string,
+  /** Threshold of additions allowed. */
+  allowedStatuses: string
+): string =>
+  `<p>The detected issue is not in one of the allowed statuses :broken_heart: </p>
+  <img src="https://media.giphy.com/media/26tPskka6guetcHle/giphy.gif" width="400" />
+    <table>
+      <tr>
+          <th>Detected Status</th>
+          <td>${issueStatus} :no_good_woman: </td>
+      </tr>
+      <tr>
+          <th>Allowed Statuses</th>
+          <td>:arrow_down: ${allowedStatuses}</td>
+        </tr>
+    </table>
+    <p>
+    Please ensure your jira story is in one of the allowed statuses
+    </p>    
+  `;

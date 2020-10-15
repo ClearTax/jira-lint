@@ -10,6 +10,8 @@ import {
   shouldSkipBranchLint,
   shouldUpdatePRDescription,
   getJIRAClient,
+  isIssueStatusValid,
+  getInvalidIssueStatusComment,
 } from '../src/utils';
 import { HIDDEN_MARKER } from '../src/constants';
 import { JIRADetails } from '../src/types';
@@ -240,5 +242,41 @@ describe('JIRA Client', () => {
     const details = await client.getTicketDetails('ES-10');
     console.log({ details });
     expect(details).not.toBeNull();
+  });
+});
+
+describe('isIssueStatusValid()', () => {
+  const issue: JIRADetails = {
+    key: 'ABC-123',
+    url: 'url',
+    type: { name: 'feature', icon: 'feature-icon-url' },
+    estimate: 1,
+    labels: [{ name: 'frontend', url: 'frontend-url' }],
+    summary: 'Story title or summary',
+    project: { name: 'project', url: 'project-url', key: 'abc' },
+    status: 'Assessment',
+  };
+
+  it('should return false if issue validation was enabled but invalid issue status', () => {
+    const expectedStatuses = ['In Test', 'In Progress'];
+    expect(isIssueStatusValid(true, expectedStatuses, issue)).toBeFalsy();
+  });
+
+  it('should return true if issue validation was enabled but issue has a valid status', () => {
+    const expectedStatuses = ['In Test', 'In Progress'];
+    issue.status = 'In Progress';
+    expect(isIssueStatusValid(true, expectedStatuses, issue)).toBeTruthy();
+  });
+
+  it('should return true if issue status validation is not enabled', () => {
+    const expectedStatuses = ['In Test', 'In Progress'];
+    expect(isIssueStatusValid(false, expectedStatuses, issue)).toBeTruthy();
+  });
+});
+
+describe('getInvalidIssueStatusComment()', () => {
+  it('should return content with the passed in issue status and allowed statses', () => {
+    expect(getInvalidIssueStatusComment('Assessment', 'In Progress')).toContain('Assessment');
+    expect(getInvalidIssueStatusComment('Assessment', 'In Progress')).toContain('In Progress');
   });
 });

@@ -17,6 +17,8 @@ import {
   shouldSkipBranchLint,
   shouldUpdatePRDescription,
   updatePrDetails,
+  isIssueStatusValid,
+  getInvalidIssueStatusComment,
 } from './utils';
 import { PullRequestParams, JIRADetails, JIRALintActionInputs } from './types';
 import { DEFAULT_PR_ADDITIONS_THRESHOLD } from './constants';
@@ -28,6 +30,8 @@ const getInputs = (): JIRALintActionInputs => {
   const BRANCH_IGNORE_PATTERN: string = core.getInput('skip-branches', { required: false }) || '';
   const SKIP_COMMENTS: boolean = core.getInput('skip-comments', { required: false }) === 'true';
   const PR_THRESHOLD = parseInt(core.getInput('pr-threshold', { required: false }), 10);
+  const VALIDATE_ISSUE_STATUS: boolean = core.getInput('validate_issue_status', { required: false }) === 'true';
+  const ALLOWED_ISSUE_STATUSES: string = core.getInput('valid_issue_statuses');
 
   return {
     JIRA_TOKEN,
@@ -36,12 +40,23 @@ const getInputs = (): JIRALintActionInputs => {
     SKIP_COMMENTS,
     PR_THRESHOLD: isNaN(PR_THRESHOLD) ? DEFAULT_PR_ADDITIONS_THRESHOLD : PR_THRESHOLD,
     JIRA_BASE_URL: JIRA_BASE_URL.endsWith('/') ? JIRA_BASE_URL.replace(/\/$/, '') : JIRA_BASE_URL,
+    VALIDATE_ISSUE_STATUS,
+    ALLOWED_ISSUE_STATUSES,
   };
 };
 
 async function run(): Promise<void> {
   try {
-    const { JIRA_TOKEN, JIRA_BASE_URL, GITHUB_TOKEN, BRANCH_IGNORE_PATTERN, SKIP_COMMENTS, PR_THRESHOLD } = getInputs();
+    const {
+      JIRA_TOKEN,
+      JIRA_BASE_URL,
+      GITHUB_TOKEN,
+      BRANCH_IGNORE_PATTERN,
+      SKIP_COMMENTS,
+      PR_THRESHOLD,
+      VALIDATE_ISSUE_STATUS,
+      ALLOWED_ISSUE_STATUSES,
+    } = getInputs();
 
     const defaultAdditionsCount = 800;
     const prThreshold: number = PR_THRESHOLD ? Number(PR_THRESHOLD) : defaultAdditionsCount;
@@ -128,6 +143,18 @@ async function run(): Promise<void> {
         ...commonPayload,
         labels,
       });
+
+      if (isIssueStatusValid(VALIDATE_ISSUE_STATUS, ALLOWED_ISSUE_STATUSES.split(','), details)) {
+        const invalidIssueStatusComment: IssuesCreateCommentParams = {
+          ...commonPayload,
+          body: getInvalidIssueStatusComment(details.status, ALLOWED_ISSUE_STATUSES),
+        };
+        console.log('Adding comment for invalid issue status');
+        addComment(client, invalidIssueStatusComment);
+
+        core.setFailed('The found jira issue does is not in acceptable statuses');
+        process.exit(1);
+      }
 
       if (shouldUpdatePRDescription(prBody)) {
         const prData: PullsUpdateParams = {
