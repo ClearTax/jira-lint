@@ -78,7 +78,7 @@ steps:
 
 #### Description
 
-When a PR passes the above check, `jira-lint` will also add the issue details to the top of the PR description. It will pick details such as the Issue summary, type, estimation points and labels and add them to the PR description.
+When a PR passes the above check, `jira-lint` will also add the issue details to the top of the PR description. It will pick details such as the Issue summary, type, estimation points, status and labels and add them to the PR description.
 
 #### Labels
 
@@ -96,6 +96,33 @@ When a PR passes the above check, `jira-lint` will also add the issue details to
  </figcaption>
 </figure>
 
+#### Issue Status Validation
+Issue status is shown in the [Description](#description).
+**Why validation issue status?** 
+In some cases, you may be pushing changes for a story that is set to `Done` or it may not have been pulled into working backlog. This section describes how we can help engineers avoid pushing to stories that are set to invalid statuses.
+
+The following flags can be used to validate issue status:
+- `validate_issue_status`
+  - If set to `true`, `jira-lint` will validate the issue status based on `allowed_issue_statuses`
+- `allowed_issue_statuses`
+  - This will only be used when `validate_issue_status` is `true`. This should be a comma separated list of statuses. If the detected issue's status is not in one of the `allowed_issue_statuses` then `jira-lint` will fail the status check.
+
+**Example of invalid status**
+  <p>:broken_heart: The detected issue is not in one of the allowed statuses :broken_heart: </p>    
+      <table>
+        <tr>
+            <th>Detected Status</th>
+            <td>${issueStatus}</td>
+            <td>:x:</td>
+        </tr>
+        <tr>
+            <th>Allowed Statuses</th>
+            <td>${allowedStatuses}</td>
+            <td>:heavy_check_mark:</td>
+          </tr>
+      </table>
+  <p>Please ensure your jira story is in one of the allowed statuses</p>
+    
 #### Soft-validations via comments
 
 `jira-lint` will add comments to a PR to encourage better PR practices:
@@ -140,10 +167,14 @@ When a PR passes the above check, `jira-lint` will also add the issue details to
 | `skip-branches` | A regex to ignore running `jira-lint` on certain branches, like production etc.                                                                                                                                                                                                                                    | false    | ' '     |
 | `skip-comments` | A `Boolean` if set to `true` then `jira-lint` will skip adding lint comments for PR title.                                                                                                                                                                                                                         | false    | false   |
 | `pr-threshold`  | An `Integer` based on which `jira-lint` will add a comment discouraging huge PRs.                                                                                                                                                                                                                                  | false    | 800     |
+| `pr-threshold`  | An `Integer` based on which `jira-lint` will add a comment discouraging huge PRs.                                                                                                                                                                                                                                  | false    | 800     |
+| `validate_issue_status`  | An `Boolean` based on which `jira-lint` will validate the status of the detected jira issue                                                                                                                                                                                                              | false    | false   |
+| `allowed_issue_statuses`  | An comma separated string. The detect jira issue's status will be compared against this list and if a match is not found then the status check will fail. Requires `validate_issue_status` to be set to `true`.                                                                                        | false    | In Progress |
 
-Since tokens are private, we suggest adding them as [GitHub secrets](https://help.github.com/en/actions/automating-your-workflow-with-github-actions/creating-and-using-encrypted-secrets).
 
 ### `jira-token`
+
+Since tokens are private, we suggest adding them as [GitHub secrets](https://help.github.com/en/actions/automating-your-workflow-with-github-actions/creating-and-using-encrypted-secrets).
 
 The Jira token is used to fetch issue information via the Jira REST API. To get the token:-
 1. Generate an [API token via JIRA](https://confluence.atlassian.com/cloud/api-tokens-938839638.html)
