@@ -27,7 +27,7 @@ inputs:
     description: 'Set this to true if you want jira-lint to validate the status of the detected jira issues'
     required: false
     default: false
-  valid_issue_statuses:
+  allowed_issue_statuses:
     description: |
       A comma separated list of acceptable Jira issue statuses. You must provide a value for this if validate_issue_status is set to true
       Requires validate_issue_status to be set to true.

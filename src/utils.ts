@@ -363,21 +363,18 @@ export const getInvalidIssueStatusComment = (
   /** Threshold of additions allowed. */
   allowedStatuses: string
 ): string =>
-  `<p>The detected issue is not in one of the allowed statuses :broken_heart: </p>
-  <img src="https://media.giphy.com/media/26tPskka6guetcHle/giphy.gif" width="400" />
-    <table>
-      <tr>
-          <th>Detected Status</th>
-          <td>${issueStatus}</td>
-          <td>:x:</td>
+  `<p>:broken_heart: The detected issue is not in one of the allowed statuses :broken_heart: </p>    
+   <table>
+     <tr>
+        <th>Detected Status</th>
+        <td>${issueStatus}</td>
+        <td>:x:</td>
+     </tr>
+     <tr>
+        <th>Allowed Statuses</th>
+        <td>${allowedStatuses}</td>
+        <td>:heavy_check_mark:</td>
       </tr>
-      <tr>
-          <th>Allowed Statuses</th>
-          <td>${allowedStatuses}</td>
-          <td>:heavy_check_mark:</td>
-        </tr>
-    </table>
-    <p>
-    Please ensure your jira story is in one of the allowed statuses
-    </p>    
+   </table>
+   <p>Please ensure your jira story is in one of the allowed statuses</p>
   `;
