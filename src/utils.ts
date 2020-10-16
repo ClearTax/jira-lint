@@ -48,7 +48,7 @@ export const getJIRAClient = (baseURL: string, token: string): JIRAClient => {
   const getIssue = async (id: string): Promise<JIRA.Issue> => {
     try {
       const response = await client.get<JIRA.Issue>(
-        `/issue/${id}?fields=project,summary,issuetype,labels,customfield_10016`
+        `/issue/${id}?fields=project,summary,issuetype,labels,status,customfield_10016`
       );
       return response.data;
     } catch (e) {
@@ -60,7 +60,14 @@ export const getJIRAClient = (baseURL: string, token: string): JIRAClient => {
     try {
       const issue: JIRA.Issue = await getIssue(key);
       const {
-        fields: { issuetype: type, project, summary, customfield_10016: estimate, labels: rawLabels },
+        fields: {
+          issuetype: type,
+          project,
+          summary,
+          customfield_10016: estimate,
+          labels: rawLabels,
+          status: issueStatus,
+        },
       } = issue;
 
       const labels = rawLabels.map((label) => ({
@@ -74,7 +81,7 @@ export const getJIRAClient = (baseURL: string, token: string): JIRAClient => {
         key,
         summary,
         url: `${baseURL}/browse/${key}`,
-        status: issue.fields.status.name,
+        status: issueStatus.name,
         type: {
           name: type.name,
           icon: type.iconUrl,
@@ -268,6 +275,10 @@ export const getPRDescription = (body = '', details: JIRADetails): string => {
       <th>Labels</th>
       <td>${getLabelsForDisplay(details.labels)}</td>
     </tr>
+    <tr>
+      <th>Status</th>
+      <td>${details.status}</td>
+    </tr>
   </table>
 </details>
 <!--
@@ -357,11 +368,13 @@ export const getInvalidIssueStatusComment = (
     <table>
       <tr>
           <th>Detected Status</th>
-          <td>${issueStatus} :no_good_woman: </td>
+          <td>${issueStatus}</td>
+          <td>:x:</td>
       </tr>
       <tr>
           <th>Allowed Statuses</th>
-          <td>:arrow_down: ${allowedStatuses}</td>
+          <td>${allowedStatuses}</td>
+          <td>:heavy_check_mark:</td>
         </tr>
     </table>
     <p>
