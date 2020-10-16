@@ -10,8 +10,8 @@ import {
   shouldSkipBranchLint,
   shouldUpdatePRDescription,
   getJIRAClient,
-  isIssueStatusValid,
   getInvalidIssueStatusComment,
+  isIssueStatusValid,
 } from '../src/utils';
 import { HIDDEN_MARKER } from '../src/constants';
 import { JIRADetails } from '../src/types';

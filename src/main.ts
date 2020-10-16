@@ -144,7 +144,7 @@ async function run(): Promise<void> {
         labels,
       });
 
-      if (isIssueStatusValid(VALIDATE_ISSUE_STATUS, ALLOWED_ISSUE_STATUSES.split(','), details)) {
+      if (!isIssueStatusValid(VALIDATE_ISSUE_STATUS, ALLOWED_ISSUE_STATUSES.split(','), details)) {
         const invalidIssueStatusComment: IssuesCreateCommentParams = {
           ...commonPayload,
           body: getInvalidIssueStatusComment(details.status, ALLOWED_ISSUE_STATUSES),
