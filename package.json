@@ -58,7 +58,7 @@
     "jest-circus": "^25.3.0",
     "jest": "^25.3.0",
     "lint-staged": "^10.1.5",
-    "lodash": "^4.17.15",
+    "lodash": "^4.17.19",
     "markdown-toc": "^1.2.0",
     "prettier": "^2.0.4",
     "ts-jest": "^25.4.0",
