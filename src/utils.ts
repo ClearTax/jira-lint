@@ -349,11 +349,7 @@ export const isIssueStatusValid = (
     return true;
   }
 
-  if (allowedIssueStatuses.includes(details.status)) {
-    return true;
-  } else {
-    return false;
-  }
+  return allowedIssueStatuses.includes(details.status);
 };
 
 /** Get the comment body for very huge PR. */
