@@ -99,7 +99,9 @@ When a PR passes the above check, `jira-lint` will also add the issue details to
 #### Issue Status Validation
 Issue status is shown in the [Description](#description).
 **Why validate issue status?** 
-In some cases, you may be pushing changes for a story that is set to `Done` or it may not have been pulled into working backlog. This section describes how we can help engineers avoid pushing to stories that are set to invalid statuses.
+In some cases, one may be pushing changes for a story that is set to `Done`/`Completed` or it may not have been pulled into working backlog or current sprint.
+
+ This option allows discouraging pushing to branches for stories that are set to statuses other than the ones allowed in the project; for example - you may want to only allow PRs for stories that are in `To Do`/`Planning`/`In Progress` states.
 
 The following flags can be used to validate issue status:
 - `validate_issue_status`
