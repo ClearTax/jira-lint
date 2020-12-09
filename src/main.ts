@@ -150,7 +150,7 @@ async function run(): Promise<void> {
           body: getInvalidIssueStatusComment(details.status, ALLOWED_ISSUE_STATUSES),
         };
         console.log('Adding comment for invalid issue status');
-        addComment(client, invalidIssueStatusComment);
+        await addComment(client, invalidIssueStatusComment);
 
         core.setFailed('The found jira issue does is not in acceptable statuses');
         process.exit(1);
