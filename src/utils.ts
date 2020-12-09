@@ -275,10 +275,6 @@ export const getPRDescription = (body = '', details: JIRADetails): string => {
       <th>Labels</th>
       <td>${getLabelsForDisplay(details.labels)}</td>
     </tr>
-    <tr>
-      <th>Status</th>
-      <td>${details.status}</td>
-    </tr>
   </table>
 </details>
 <!--
