@@ -81,6 +81,7 @@ export namespace JIRA {
     id: string;
     key: string;
     self: string;
+    status: string;
     fields: {
       summary: string;
       status: IssueStatus;
@@ -97,6 +98,7 @@ export interface JIRADetails {
   key: string;
   summary: string;
   url: string;
+  status: string;
   type: {
     name: string;
     icon: string;
@@ -117,6 +119,8 @@ export interface JIRALintActionInputs {
   BRANCH_IGNORE_PATTERN: string;
   SKIP_COMMENTS: boolean;
   PR_THRESHOLD: number;
+  VALIDATE_ISSUE_STATUS: boolean;
+  ALLOWED_ISSUE_STATUSES: string;
 }
 
 export interface JIRAClient {

@@ -48,7 +48,7 @@ export const getJIRAClient = (baseURL: string, token: string): JIRAClient => {
   const getIssue = async (id: string): Promise<JIRA.Issue> => {
     try {
       const response = await client.get<JIRA.Issue>(
-        `/issue/${id}?fields=project,summary,issuetype,labels,customfield_10016`
+        `/issue/${id}?fields=project,summary,issuetype,labels,status,customfield_10016`
       );
       return response.data;
     } catch (e) {
@@ -60,7 +60,14 @@ export const getJIRAClient = (baseURL: string, token: string): JIRAClient => {
     try {
       const issue: JIRA.Issue = await getIssue(key);
       const {
-        fields: { issuetype: type, project, summary, customfield_10016: estimate, labels: rawLabels },
+        fields: {
+          issuetype: type,
+          project,
+          summary,
+          customfield_10016: estimate,
+          labels: rawLabels,
+          status: issueStatus,
+        },
       } = issue;
 
       const labels = rawLabels.map((label) => ({
@@ -74,6 +81,7 @@ export const getJIRAClient = (baseURL: string, token: string): JIRAClient => {
         key,
         summary,
         url: `${baseURL}/browse/${key}`,
+        status: issueStatus.name,
         type: {
           name: type.name,
           icon: type.iconUrl,
@@ -256,6 +264,10 @@ export const getPRDescription = (body = '', details: JIRADetails): string => {
       </td>
     </tr>
     <tr>
+      <th>Status</th>
+      <td>${details.status}</td>
+    </tr>
+    <tr>
       <th>Points</th>
       <td>${details.estimate || 'N/A'}</td>
     </tr>
@@ -321,3 +333,40 @@ Valid sample branch names:
   ‣ 'bugfix/fix-some-strange-bug_GAL-2345'
 `;
 };
+
+/** Check if jira issue status validation is enabled then compare the issue status will the allowed statuses. */
+export const isIssueStatusValid = (
+  shouldValidate: boolean,
+  allowedIssueStatuses: string[],
+  details: JIRADetails
+): boolean => {
+  if (!shouldValidate) {
+    core.info('Skipping Jira issue status validation as shouldValidate is false');
+    return true;
+  }
+
+  return allowedIssueStatuses.includes(details.status);
+};
+
+/** Get the comment body for very huge PR. */
+export const getInvalidIssueStatusComment = (
+  /** Number of additions. */
+  issueStatus: string,
+  /** Threshold of additions allowed. */
+  allowedStatuses: string
+): string =>
+  `<p>:broken_heart: The detected issue is not in one of the allowed statuses :broken_heart: </p>    
+   <table>
+     <tr>
+        <th>Detected Status</th>
+        <td>${issueStatus}</td>
+        <td>:x:</td>
+     </tr>
+     <tr>
+        <th>Allowed Statuses</th>
+        <td>${allowedStatuses}</td>
+        <td>:heavy_check_mark:</td>
+      </tr>
+   </table>
+   <p>Please ensure your jira story is in one of the allowed statuses</p>
+  `;
