@@ -114,11 +114,11 @@ async function run(): Promise<void> {
       process.exit(0);
     }
 
-    const issueKeys = getJIRAIssueKeys(`${headBranch} ${title}, ${prBody}`);
+    const issueKeys = getJIRAIssueKeys(`${headBranch} ${title} ${prBody}`);
     if (!issueKeys.length) {
       const comment: IssuesCreateCommentParams = {
         ...commonPayload,
-        body: getNoIdComment(headBranch),
+        body: getNoIdComment(headBranch, title, prBody),
       };
       await addComment(client, comment);
 
@@ -189,7 +189,7 @@ async function run(): Promise<void> {
     } else {
       const comment: IssuesCreateCommentParams = {
         ...commonPayload,
-        body: getNoIdComment(headBranch),
+        body: getNoIdComment(headBranch, title, prBody),
       };
       await addComment(client, comment);
 
