@@ -319,9 +319,11 @@ export const getHugePrComment = (
   `;
 
 /** Get the comment body for pr with no JIRA id in the branch name. */
-export const getNoIdComment = (branch: string): string => {
-  return `<p> A JIRA Issue ID is missing from your branch name! 🦄</p>
+export const getNoIdComment = (branch: string, title: string, prBody: string): string => {
+  return `<p> A JIRA Issue ID is missing from your branch name, PR title and PR description! 🦄</p>
 <p>Your branch: ${branch}</p>
+<p>Your PR title: ${title}</p>
+<p>Your PR description: ${prBody}</p>
 <p>If this is your first time contributing to this repository - welcome!</p>
 <hr />
 <p>Please refer to <a href="https://github.com/cleartax/jira-lint">jira-lint</a> to get started.

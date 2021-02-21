@@ -212,8 +212,12 @@ describe('isHumongousPR()', () => {
 });
 
 describe('getNoIdComment()', () => {
-  it('should return the comment content with the branch name', () => {
-    expect(getNoIdComment('test_new_feature')).toContain('test_new_feature');
+  it('should return the comment content with the branch name, title and body', () => {
+    expect(getNoIdComment('test_new_feature', 'new feature', 'this is a new feature')).toContain('test_new_feature');
+    expect(getNoIdComment('test_new_feature', 'new feature', 'this is a new feature')).toContain('new feature');
+    expect(getNoIdComment('test_new_feature', 'new feature', 'this is a new feature')).toContain(
+      'this is a new feature'
+    );
   });
 });
 
