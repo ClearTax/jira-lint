@@ -114,7 +114,7 @@ async function run(): Promise<void> {
       process.exit(0);
     }
 
-    const issueKeys = getJIRAIssueKeys(headBranch);
+    const issueKeys = getJIRAIssueKeys(`${headBranch} ${title}, ${prBody}`);
     if (!issueKeys.length) {
       const comment: IssuesCreateCommentParams = {
         ...commonPayload,
