@@ -9,7 +9,7 @@ import {
   getHugePrComment,
   getJIRAClient,
   getJIRAIssueKeys,
-  getNoIdComment,
+  addNoIdComment,
   getPRDescription,
   getPRTitleComment,
   isHumongousPR,
@@ -116,11 +116,7 @@ async function run(): Promise<void> {
 
     const issueKeys = getJIRAIssueKeys(headBranch);
     if (!issueKeys.length) {
-      const comment: IssuesCreateCommentParams = {
-        ...commonPayload,
-        body: getNoIdComment(headBranch),
-      };
-      await addComment(client, comment);
+      await addNoIdComment(client, headBranch, commonPayload);
 
       core.setFailed('JIRA issue id is missing in your branch.');
       process.exit(1);
@@ -187,11 +183,7 @@ async function run(): Promise<void> {
         }
       }
     } else {
-      const comment: IssuesCreateCommentParams = {
-        ...commonPayload,
-        body: getNoIdComment(headBranch),
-      };
-      await addComment(client, comment);
+      await addNoIdComment(client, headBranch, commonPayload);
 
       core.setFailed('Invalid JIRA key. Please create a branch with a valid JIRA issue key.');
       process.exit(1);
