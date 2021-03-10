@@ -2,7 +2,8 @@ import axios from 'axios';
 import * as core from '@actions/core';
 import * as github from '@actions/github';
 import similarity from 'string-similarity';
-import { IssuesAddLabelsParams, PullsUpdateParams, IssuesCreateCommentParams } from '@octokit/rest';
+import { IssuesAddLabelsParams, PullsUpdateParams, IssuesCreateCommentParams, IssuesListCommentsParams
+ } from '@octokit/rest';
 import {
   MARKER_REGEX,
   BOT_BRANCH_PATTERNS,
@@ -287,6 +288,40 @@ export const getPRDescription = (body = '', details: JIRADetails): string => {
 ${body}`;
 };
 
+/**
+ * Helpful function to add a comment that we couldn't find the Pivotal ID
+ * of this comment. Will attempt to only add once.
+ */
+export const addNoIdComment = async (
+  client: github.GitHub,
+  branch: string,
+  params: IssuesListCommentsParams
+) => {
+  const { data: comments } = await client.issues.listComments(params);
+
+  const noIdComment = getNoIdComment(branch);
+
+  // Find a previously created comment by our bot
+  const previousComments = comments.filter(
+    comment => comment.body.includes(noIdComment),
+  );
+
+  if (previousComments.length > 0) {
+    // Update existing comment
+    const { id } = previousComments[0];
+    console.log(`Comment already exists as comment #${id}`);
+  } else {
+    // Insert a new comment
+    console.log('Adding a new comment');
+    const comment: IssuesCreateCommentParams = {
+      ...params,
+      body: noIdComment
+    };
+    await addComment(client, comment);
+  }
+}
+
+
 /** Check if a PR is considered "huge". */
 export const isHumongousPR = (additions: number, threshold: number): boolean =>
   typeof additions === 'number' && additions > threshold;
@@ -355,7 +390,7 @@ export const getInvalidIssueStatusComment = (
   /** Threshold of additions allowed. */
   allowedStatuses: string
 ): string =>
-  `<p>:broken_heart: The detected issue is not in one of the allowed statuses :broken_heart: </p>    
+  `<p>:broken_heart: The detected issue is not in one of the allowed statuses :broken_heart: </p>
    <table>
      <tr>
         <th>Detected Status</th>
