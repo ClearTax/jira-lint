@@ -324,13 +324,13 @@ export const getNoIdComment = (branch: string): string => {
 <p>Your branch: ${branch}</p>
 <p>If this is your first time contributing to this repository - welcome!</p>
 <hr />
-<p>Please refer to <a href="https://github.com/cleartax/jira-lint">jira-lint</a> to get started.
+<p>Please refer to this ADR on <a href="https://github.com/invitation-homes/technology-decisions/blob/main/0014-tracking-jira-issues-in-git.md">Tracking Jira issues in Git</a> for details.
 <p>Without the JIRA Issue ID in your branch name you would lose out on automatic updates to JIRA via SCM; some GitHub status checks might fail.</p>
 Valid sample branch names:
 
-  ‣ feature/shiny-new-feature--mojo-10'
-  ‣ 'chore/changelogUpdate_mojo-123'
-  ‣ 'bugfix/fix-some-strange-bug_GAL-2345'
+  ‣ 'DDTS-112-build-new-cms'
+  ‣ 'TTEF-2-fix-react-native-bug'
+  ‣ 'INTG-332-add-logging-to-external-api'
 `;
 };
 
