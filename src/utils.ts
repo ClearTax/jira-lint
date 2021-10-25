@@ -230,7 +230,7 @@ export const shouldSkipBranchLint = (branch: string, additionalIgnorePattern?: s
 export const shouldUpdatePRDescription = (
   /** The PR description/body as a string. */
   body?: string
-): boolean => typeof body === 'string' && !MARKER_REGEX.test(body);
+): boolean => (body ? !MARKER_REGEX.test(body) : true);
 
 /**
  * Get links to labels & remove spacing so the table works.
@@ -282,9 +282,15 @@ export const getPRDescription = (body = '', details: JIRADetails): string => {
   ${HIDDEN_MARKER}
 -->
 
+${
+  body
+    ? `
 ---
 
-${body}`;
+${body}
+`
+    : ''
+}`;
 };
 
 /** Check if a PR is considered "huge". */

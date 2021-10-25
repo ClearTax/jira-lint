@@ -173,6 +173,10 @@ some actual content'
 `)
     ).toBeTruthy();
   });
+
+  it('should return true when the pull request body is undefined', () => {
+    expect(shouldUpdatePRDescription(undefined)).toBe(true);
+  });
 });
 
 describe('getPRDescription()', () => {
@@ -194,6 +198,26 @@ describe('getPRDescription()', () => {
     expect(description).toContain(issue.estimate);
     expect(description).toContain(issue.status);
     expect(description).toContain(issue.labels[0].name);
+    expect(description).toContain('---');
+    expect(description).toContain('some_body');
+  });
+
+  it('should include the jira details when the pull request body is undefined', () => {
+    const issue: JIRADetails = {
+      key: 'ABC-123',
+      url: 'url',
+      type: { name: 'feature', icon: 'feature-icon-url' },
+      estimate: 1,
+      labels: [{ name: 'frontend', url: 'frontend-url' }],
+      summary: 'Story title or summary',
+      project: { name: 'project', url: 'project-url', key: 'abc' },
+      status: 'In Progress',
+    };
+
+    const description = getPRDescription(undefined, issue);
+
+    expect(description).toContain(issue.key);
+    expect(description).not.toContain('---');
   });
 });
 
