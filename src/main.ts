@@ -8,7 +8,7 @@ import {
   getHotfixLabel,
   getHugePrComment,
   getJIRAClient,
-  getJIRAIssueKeys,
+  getJIRAIssueKey,
   getNoIdComment,
   getPRDescription,
   getPRTitleComment,
@@ -115,8 +115,8 @@ async function run(): Promise<void> {
       process.exit(0);
     }
 
-    const issueKeys = getJIRAIssueKeys(headBranch);
-    if (!issueKeys.length) {
+    const issueKey = getJIRAIssueKey(headBranch);
+    if (!issueKey.length) {
       const comment: IssuesCreateCommentParams = {
         ...commonPayload,
         body: getNoIdComment(headBranch),
@@ -127,8 +127,6 @@ async function run(): Promise<void> {
       process.exit(1);
     }
 
-    // use the last match (end of the branch name)
-    const issueKey = issueKeys[issueKeys.length - 1];
     console.log(`JIRA key -> ${issueKey}`);
 
     const { getTicketDetails } = getJIRAClient(JIRA_BASE_URL, JIRA_TOKEN);
@@ -138,7 +136,7 @@ async function run(): Promise<void> {
       const hotfixLabel: string = getHotfixLabel(baseBranch);
       const typeLabel: string = details?.type?.name || '';
       const labels: string[] = [podLabel, hotfixLabel, typeLabel].filter(isNotBlank);
-      console.log('Adding lables -> ', labels);
+      console.log('Adding labels -> ', labels);
 
       await addLabels(client, {
         ...commonPayload,

@@ -1,7 +1,7 @@
 import {
   getHotfixLabel,
   getHugePrComment,
-  getJIRAIssueKeys,
+  getJIRAIssueKey,
   getLabelsForDisplay,
   getNoIdComment,
   getPRDescription,
@@ -81,47 +81,34 @@ describe('getHotFixLabel()', () => {
   });
 });
 
-describe('getJIRAIssueKeys()', () => {
-  it('gets multiple keys from a string', () => {
+describe('getJIRAIssueKey()', () => {
+  it('gets the keys from a string', () => {
     expect(
-      getJIRAIssueKeys(
-        'BF-18 abc-123 X-88 ABCDEFGHIJKL-999 abc XY-Z-333 abcDEF-33 ABCDEF-33 abcdef-33 ABC-1 PB2-1 pb2-1 P2P-1 p2p-1'
+      getJIRAIssueKey(
+        'BF-18-my-feature-abc-123-X-88-ABCDEFGHIJKL-999-abc-XY-Z-333-abcDEF-33-ABCDEF-33_abcdef-33_ABC-1_PB2-1_pb2-1_P2P-1_p2p-1'
       )
-    ).toEqual([
-      'BF-18',
-      'ABC-123',
-      'X-88',
-      'CDEFGHIJKL-999',
-      'Z-333',
-      'ABCDEF-33',
-      'ABCDEF-33',
-      'ABCDEF-33',
-      'ABC-1',
-      'PB2-1',
-      'PB2-1',
-      'P2P-1',
-      'P2P-1',
-    ]);
+    ).toEqual('BF-18');
+    expect(getJIRAIssueKey('ASAP2-123-my-feature')).toEqual('ASAP2-123');
   });
 
-  it('gets jira key from different branch names', () => {
-    expect(getJIRAIssueKeys('fix/login-protocol-es-43')).toEqual(['ES-43']);
-    expect(getJIRAIssueKeys('fix/login-protocol-ES-43')).toEqual(['ES-43']);
-    expect(getJIRAIssueKeys('feature/newFeature_esch-100')).toEqual(['ESCH-100']);
-    expect(getJIRAIssueKeys('feature/newFeature_ESCH-101')).toEqual(['ESCH-101']);
-    expect(getJIRAIssueKeys('feature/newFeature--mojo-5611')).toEqual(['MOJO-5611']);
-    expect(getJIRAIssueKeys('feature/newFeature--MOJO-6789')).toEqual(['MOJO-6789']);
+  it('gets empty string as jira key from malformed branch names', () => {
+    expect(getJIRAIssueKey('fix/login-protocol-es-43')).toEqual('');
+    expect(getJIRAIssueKey('fix/login-protocol-ES-43')).toEqual('');
+    expect(getJIRAIssueKey('feature/newFeature_esch-100')).toEqual('');
+    expect(getJIRAIssueKey('feature/newFeature_ESCH-101')).toEqual('');
+    expect(getJIRAIssueKey('feature/newFeature--mojo-5611')).toEqual('');
+    expect(getJIRAIssueKey('feature/newFeature--MOJO-6789')).toEqual('');
 
-    expect(getJIRAIssueKeys('chore/task-with-dashes--MOJO-6789')).toEqual(['MOJO-6789']);
-    expect(getJIRAIssueKeys('chore/task_with_underscores--MOJO-6789')).toEqual(['MOJO-6789']);
-    expect(getJIRAIssueKeys('chore/MOJO-6789-task_with_underscores')).toEqual(['MOJO-6789']);
-    expect(getJIRAIssueKeys('MOJO-6789/task_with_underscores')).toEqual(['MOJO-6789']);
+    expect(getJIRAIssueKey('chore/task-with-dashes--MOJO-6789')).toEqual('');
+    expect(getJIRAIssueKey('chore/task_with_underscores--MOJO-6789')).toEqual('');
+    expect(getJIRAIssueKey('chore/MOJO-6789-task_with_underscores')).toEqual('');
+    expect(getJIRAIssueKey('MOJO-6789/task_with_underscores')).toEqual('');
 
-    expect(getJIRAIssueKeys('MOJO-6789/task_with_underscores-ES-43')).toEqual(['MOJO-6789', 'ES-43']);
-    expect(getJIRAIssueKeys('nudge-live-chat-users-Es-172')).toEqual(['ES-172']);
+    expect(getJIRAIssueKey('MOJO-6789/task_with_underscores-ES-43')).toEqual('');
+    expect(getJIRAIssueKey('nudge-live-chat-users-Es-172')).toEqual('');
 
-    expect(getJIRAIssueKeys('feature/missingKey')).toEqual([]);
-    expect(getJIRAIssueKeys('')).toEqual([]);
+    expect(getJIRAIssueKey('feature/missingKey')).toEqual('');
+    expect(getJIRAIssueKey('')).toEqual('');
   });
 });
 
