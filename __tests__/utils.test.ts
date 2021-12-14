@@ -92,6 +92,8 @@ describe('getJIRAIssueKey()', () => {
   });
 
   it('gets empty string as jira key from malformed branch names', () => {
+    expect(getJIRAIssueKey('eng-115-my-feature')).toEqual('');
+    expect(getJIRAIssueKey('EN1G-115-my-feature')).toEqual(''); // NOTE: fails due to number in first piece
     expect(getJIRAIssueKey('fix/login-protocol-es-43')).toEqual('');
     expect(getJIRAIssueKey('fix/login-protocol-ES-43')).toEqual('');
     expect(getJIRAIssueKey('feature/newFeature_esch-100')).toEqual('');
