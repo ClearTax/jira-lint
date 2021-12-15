@@ -14,7 +14,6 @@ export const BOT_BRANCH_PATTERNS: RegExp[] = [/^dependabot/, /^all-contributors/
  * Default branch patterns to skip CI. Skip jira-lint when the HEAD ref matches one of these.
  */
 export const DEFAULT_BRANCH_PATTERNS: RegExp[] = [
-  /^dependabot\//,
   /^main$/,
   /^master$/,
   /^production$/,
