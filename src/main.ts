@@ -25,7 +25,8 @@ import { DEFAULT_PR_ADDITIONS_THRESHOLD } from './constants';
 
 const getInputs = (): JIRALintActionInputs => {
   const JIRA_TOKEN: string = core.getInput('jira-token', { required: true });
-  const JIRA_BASE_URL: string = core.getInput('jira-base-url', { required: true });
+  const JIRA_BASE_URL: string =
+    core.getInput('jira-base-url', { required: false }) ?? 'https://invitationhomes.atlassian.net';
   const GITHUB_TOKEN: string = core.getInput('github-token', { required: true });
   const BRANCH_IGNORE_PATTERN: string = core.getInput('skip-branches', { required: false }) || '';
   const SKIP_COMMENTS: boolean = core.getInput('skip-comments', { required: false }) === 'true';
