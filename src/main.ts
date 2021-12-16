@@ -189,27 +189,35 @@ async function run(): Promise<void> {
         }
       }
 
-      const prPayload = {
-        owner,
-        repo,
-        // eslint-disable-next-line @typescript-eslint/camelcase
-        pull_number: prNumber,
-      };
-      console.log('Fetching PR commits...');
-      const { data: commits } = await getCommits(client, prPayload);
-      console.log('Fetced PR commits');
-      console.log({ commits });
-      const prCommitsValidationResults = validateCommitMessages(commits, issueKey);
-      if (!prCommitsValidationResults.valid) {
-        const hugePrComment = {
-          ...commonPayload,
-          body: getNoIdCommitMessagesComment(prCommitsValidationResults),
+      const validatePrCommits = async (): Promise<void> => {
+        // NOTE: 1. Get commits for pull request
+        const prPayload = {
+          owner,
+          repo,
+          // eslint-disable-next-line @typescript-eslint/camelcase
+          pull_number: prNumber,
         };
-        console.log('Adding comment for commits without Jira Issue Key');
-        await addComment(client, hugePrComment);
-        core.setFailed('One or more commits did not prepend the Jira Issue Key - ');
-        process.exit(1);
-      }
+        console.log('Fetching PR commits...');
+        const { data: commits } = await getCommits(client, prPayload);
+        console.log('Fetced PR commits');
+        console.log({ commits });
+
+        // NOTE: 2. Validate commit messages against Jira issue key
+        const prCommitsValidationResults = validateCommitMessages(commits, issueKey);
+
+        // NOTE: 3. If there are invalid commit messages, post a comment to the PR and exit/fail
+        if (!prCommitsValidationResults.valid) {
+          const hugePrComment = {
+            ...commonPayload,
+            body: getNoIdCommitMessagesComment(prCommitsValidationResults),
+          };
+          console.log('Adding comment for commits without Jira Issue Key');
+          await addComment(client, hugePrComment);
+          core.setFailed('One or more commits did not prepend the Jira Issue Key - ');
+          process.exit(1);
+        }
+      };
+      await validatePrCommits();
     } else {
       const comment: IssuesCreateCommentParams = {
         ...commonPayload,
