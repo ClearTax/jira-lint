@@ -1,4 +1,5 @@
 import { AxiosInstance } from 'axios';
+import { PullsListCommitsResponseItem } from '@octokit/rest';
 
 export interface PullRequestParams {
   number: number;
@@ -129,4 +130,13 @@ export interface JIRAClient {
   getIssue: (key: string) => Promise<JIRA.Issue>;
   /** Get required details to display in PR. */
   getTicketDetails: (key: string) => Promise<JIRADetails>;
+}
+
+interface ValidateCommitMessagesResponseItem extends PullsListCommitsResponseItem {
+  valid: boolean;
+}
+
+export interface ValidateCommitMessagesResponse {
+  valid: boolean;
+  results: ValidateCommitMessagesResponseItem[];
 }

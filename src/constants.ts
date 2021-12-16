@@ -22,7 +22,7 @@ export const DEFAULT_BRANCH_PATTERNS: RegExp[] = [
 ];
 
 /**
- * Regex to match JIRA issue keys.
+ * Regex to match JIRA issue keys in branches.
  */
 export const JIRA_REGEX_MATCHER = /^[A-Z]{1,10}\d*-\d+-/;
 

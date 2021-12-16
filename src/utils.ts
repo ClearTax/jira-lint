@@ -2,7 +2,14 @@ import axios from 'axios';
 import * as core from '@actions/core';
 import * as github from '@actions/github';
 import similarity from 'string-similarity';
-import { IssuesAddLabelsParams, PullsUpdateParams, IssuesCreateCommentParams } from '@octokit/rest';
+import {
+  IssuesAddLabelsParams,
+  PullsUpdateParams,
+  IssuesCreateCommentParams,
+  PullsListCommitsParams,
+  PullsListCommitsResponse,
+  Response,
+} from '@octokit/rest';
 import {
   MARKER_REGEX,
   BOT_BRANCH_PATTERNS,
@@ -10,7 +17,7 @@ import {
   JIRA_REGEX_MATCHER,
   HIDDEN_MARKER,
 } from './constants';
-import { JIRA, JIRADetails, JIRAClient } from './types';
+import { JIRA, JIRADetails, JIRAClient, ValidateCommitMessagesResponse } from './types';
 
 export const isBlank = (input: string): boolean => input.trim().length === 0;
 export const isNotBlank = (input: string): boolean => !isBlank(input);
@@ -129,6 +136,36 @@ export const addComment = async (client: github.GitHub, comment: IssuesCreateCom
   } catch (error) {
     core.setFailed(error.message);
   }
+};
+
+/** Get commit messages from a PR. */
+export const getCommits = async (
+  client: github.GitHub,
+  payload: PullsListCommitsParams
+): Promise<Response<PullsListCommitsResponse>> => {
+  try {
+    return await client.pulls.listCommits(payload);
+  } catch (error) {
+    core.setFailed(error.message);
+    process.exit(1);
+  }
+};
+
+/** Validate commit messages. */
+export const validateCommitMessages = (
+  commits: PullsListCommitsResponse,
+  jiraIssueKey: string
+): ValidateCommitMessagesResponse => {
+  const results = commits.map((commit) => ({
+    ...commit,
+    // TODO: allow merge commits?
+    valid: commit.commit.message.startsWith(`${jiraIssueKey} `),
+  }));
+
+  return {
+    valid: results.every((commitResult) => commitResult.valid),
+    results,
+  };
 };
 
 /** Get a comment based on story title and PR title similarity. */
@@ -326,6 +363,27 @@ Valid sample branch names:
   ‣ 'DDTS-112-build-new-cms'
   ‣ 'TTEF-2-fix-react-native-bug'
   ‣ 'INTG-332-add-logging-to-external-api'
+`;
+};
+
+/** Get the comment body for pr with no JIRA id in one or more commit messages. */
+export const getNoIdCommitMessagesComment = (validationResponse: ValidateCommitMessagesResponse): string => {
+  // TODO: list why?
+  return `<p> A JIRA Issue ID is missing from one or more of your commit messages! 🦄</p>
+<p>Commits without IDs:</p>
+  ${validationResponse.results
+    .filter(({ valid }) => !valid)
+    .map(
+      (commit) => `‣ ${commit.sha} - ${commit.commit.message}
+  `
+    )}
+<hr />
+<p>Please follow <a href="https://github.com/invitation-homes/technology-decisions/blob/main/0014-tracking-jira-issues-in-git.md">our standards</a> for commit messages.</p>
+Valid sample commit messages:
+
+  ‣ 'DDTS-112 Build new CMS'
+  ‣ 'TTEF-2 Fix react-native bug'
+  ‣ 'INTG-332 Add logging to external api'
 `;
 };
 

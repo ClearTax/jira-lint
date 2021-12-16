@@ -19,6 +19,9 @@ import {
   updatePrDetails,
   isIssueStatusValid,
   getInvalidIssueStatusComment,
+  getCommits,
+  validateCommitMessages,
+  getNoIdCommitMessagesComment,
 } from './utils';
 import { PullRequestParams, JIRADetails, JIRALintActionInputs } from './types';
 import { DEFAULT_PR_ADDITIONS_THRESHOLD } from './constants';
@@ -184,6 +187,28 @@ async function run(): Promise<void> {
             addComment(client, hugePrComment);
           }
         }
+      }
+
+      const prPayload = {
+        owner,
+        repo,
+        // eslint-disable-next-line @typescript-eslint/camelcase
+        pull_number: prNumber,
+      };
+      console.log('Fetching PR commits...');
+      const { data: commits } = await getCommits(client, prPayload);
+      console.log('Fetced PR commits');
+      console.log({ commits });
+      const prCommitsValidationResults = validateCommitMessages(commits, issueKey);
+      if (!prCommitsValidationResults.valid) {
+        const hugePrComment = {
+          ...commonPayload,
+          body: getNoIdCommitMessagesComment(prCommitsValidationResults),
+        };
+        console.log('Adding comment for commits without Jira Issue Key');
+        await addComment(client, hugePrComment);
+        core.setFailed('One or more commits did not prepend the Jira Issue Key - ');
+        process.exit(1);
       }
     } else {
       const comment: IssuesCreateCommentParams = {
