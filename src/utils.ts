@@ -156,10 +156,10 @@ export const validateCommitMessages = (
   commits: PullsListCommitsResponse,
   jiraIssueKey: string
 ): ValidateCommitMessagesResponse => {
+  const isMergeCommit = (message: string): boolean => /^Merge (branch|pull request)/i.test(message);
   const results = commits.map((commit) => ({
     ...commit,
-    // TODO: allow merge commits?
-    valid: commit.commit.message.startsWith(`${jiraIssueKey} `),
+    valid: commit.commit.message.startsWith(`${jiraIssueKey} `) || isMergeCommit(commit.commit.message),
   }));
 
   return {
