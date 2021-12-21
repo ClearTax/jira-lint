@@ -168,6 +168,25 @@ export const validateCommitMessages = (
   };
 };
 
+/** Validate PR title. */
+export const validatePrTitle = (title: string, issueKey: string): boolean => {
+  return title.startsWith(`${issueKey} `);
+};
+
+/** Get the comment body for pr with no JIRA id in the branch name. */
+export const getNoIdPrTitleComment = (title: string): string => {
+  return `<p> A JIRA Issue ID is missing from your PR title! 🦄</p>
+<p>Your title: ${title}</p>
+<hr />
+<p>Please follow <a href="https://github.com/invitation-homes/technology-decisions/blob/main/0014-tracking-jira-issues-in-git.md">our standards</a> for PR titles.</p>
+Valid sample PR titles:
+
+  ‣ 'DDTS-112 Build new CMS'
+  ‣ 'TTEF-2 Fix React Native bug'
+  ‣ 'INTG-332 Add logging to external api'
+`;
+};
+
 /** Get a comment based on story title and PR title similarity. */
 export const getPRTitleComment = (storyTitle: string, prTitle: string): string => {
   const matchRange: number = similarity.compareTwoStrings(storyTitle, prTitle);
