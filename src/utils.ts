@@ -368,7 +368,6 @@ Valid sample branch names:
 
 /** Get the comment body for pr with no JIRA id in one or more commit messages. */
 export const getNoIdCommitMessagesComment = (validationResponse: ValidateCommitMessagesResponse): string => {
-  // TODO: list why?
   return `<p> A JIRA Issue ID is missing from one or more of your commit messages! 🦄</p>
 <p>Commits without IDs:</p>
   ${validationResponse.results

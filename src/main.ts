@@ -199,7 +199,7 @@ async function run(): Promise<void> {
         };
         console.log('Fetching PR commits...');
         const { data: commits } = await getCommits(client, prPayload);
-        console.log('Fetced PR commits');
+        console.log('Fetched PR commits');
         console.log({ commits });
 
         // NOTE: 2. Validate commit messages against Jira issue key
@@ -207,13 +207,13 @@ async function run(): Promise<void> {
 
         // NOTE: 3. If there are invalid commit messages, post a comment to the PR and exit/fail
         if (!prCommitsValidationResults.valid) {
-          const hugePrComment = {
+          const commitsWithoutJiraKeyComment = {
             ...commonPayload,
             body: getNoIdCommitMessagesComment(prCommitsValidationResults),
           };
           console.log('Adding comment for commits without Jira Issue Key');
-          await addComment(client, hugePrComment);
-          core.setFailed('One or more commits did not prepend the Jira Issue Key - ');
+          await addComment(client, commitsWithoutJiraKeyComment);
+          core.setFailed(`One or more commits did not prepend the Jira Issue Key - ${issueKey}`);
           process.exit(1);
         }
       };
