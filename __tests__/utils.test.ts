@@ -12,7 +12,9 @@ import {
   getJIRAClient,
   getInvalidIssueStatusComment,
   isIssueStatusValid,
+  validateCommitMessages,
 } from '../src/utils';
+import { PullsListCommitsResponse } from '@octokit/rest';
 import { HIDDEN_MARKER } from '../src/constants';
 import { JIRADetails } from '../src/types';
 
@@ -111,6 +113,36 @@ describe('getJIRAIssueKey()', () => {
 
     expect(getJIRAIssueKey('feature/missingKey')).toEqual('');
     expect(getJIRAIssueKey('')).toEqual('');
+  });
+});
+
+describe('validateCommitMessages', () => {
+  it('should validate that commit messages have the Jira Issue Key prepended', () => {
+    const createFakeCommit = (message: string): unknown => ({ sha: 'abc123', commit: { message } });
+    const commits = [
+      createFakeCommit('ENG-117 great commit message'),
+      createFakeCommit("Merge branch 'release/v1.8.0' into cdec-1270-uprev"),
+      createFakeCommit('bad commit message'),
+      createFakeCommit('Merge pull request #827 from invitation-homes/ENG-117-awesome-branch'),
+      createFakeCommit('eng-117 bad commit message'),
+      createFakeCommit('ENG-117 - okay commit message'),
+      createFakeCommit('ENG-117bad commit message no space after issue ky'),
+    ] as PullsListCommitsResponse;
+    const jiraKey = 'ENG-117';
+
+    const result = validateCommitMessages(commits, jiraKey);
+
+    expect(result).toEqual({
+      valid: false,
+      results: expect.any(Array),
+    });
+    expect(result.results[0].valid).toEqual(true);
+    expect(result.results[1].valid).toEqual(true);
+    expect(result.results[2].valid).toEqual(false);
+    expect(result.results[3].valid).toEqual(true);
+    expect(result.results[4].valid).toEqual(false);
+    expect(result.results[5].valid).toEqual(true);
+    expect(result.results[6].valid).toEqual(false);
   });
 });
 
