@@ -13,6 +13,7 @@ import {
   getInvalidIssueStatusComment,
   isIssueStatusValid,
   validateCommitMessages,
+  validatePrTitle,
 } from '../src/utils';
 import { PullsListCommitsResponse } from '@octokit/rest';
 import { HIDDEN_MARKER } from '../src/constants';
@@ -143,6 +144,15 @@ describe('validateCommitMessages', () => {
     expect(result.results[4].valid).toEqual(false);
     expect(result.results[5].valid).toEqual(true);
     expect(result.results[6].valid).toEqual(false);
+  });
+});
+
+describe('validatePrTitle', () => {
+  it('should validate PR titles', () => {
+    expect(validatePrTitle('ENG-120 Awesome PR Title', 'ENG-120')).toEqual(true);
+    expect(validatePrTitle('ENG-120: Awesome PR Title', 'ENG-120')).toEqual(false);
+    expect(validatePrTitle('Rogue Title', 'ENG-120')).toEqual(false);
+    expect(validatePrTitle('eng-120 lowercase title', 'ENG-120')).toEqual(false);
   });
 });
 

@@ -22,6 +22,8 @@ import {
   getCommits,
   validateCommitMessages,
   getNoIdCommitMessagesComment,
+  validatePrTitle,
+  getNoIdPrTitleComment,
 } from './utils';
 import { PullRequestParams, JIRADetails, JIRALintActionInputs } from './types';
 import { DEFAULT_PR_ADDITIONS_THRESHOLD } from './constants';
@@ -218,6 +220,21 @@ async function run(): Promise<void> {
         }
       };
       await validatePrCommits();
+
+      const validatePullRequestTitle = async (): Promise<void> => {
+        console.log(`Validating PR Title "${title}" with Jira Issue Key "${issueKey}"`);
+        if (!validatePrTitle(title, issueKey)) {
+          const invalidPrTitleComment = {
+            ...commonPayload,
+            body: getNoIdPrTitleComment(title),
+          };
+          console.log('Adding comment for PR Title without Jira Issue Key');
+          await addComment(client, invalidPrTitleComment);
+          core.setFailed('PR title did not prepend the Jira Issue Key');
+          process.exit(1);
+        }
+      };
+      await validatePullRequestTitle();
     } else {
       const comment: IssuesCreateCommentParams = {
         ...commonPayload,
