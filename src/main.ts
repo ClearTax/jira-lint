@@ -138,7 +138,7 @@ async function run(): Promise<void> {
       const typeLabel: string = details?.type?.name || '';
       const statusLabel: string = details?.status || '';
       const labels: string[] = [statusLabel, podLabel, hotfixLabel, typeLabel].filter(isNotBlank);
-      console.log('Adding lables -> ', labels);
+      console.log('Adding labels -> ', labels);
 
       await addLabels(client, {
         ...commonPayload,

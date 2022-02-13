@@ -109,6 +109,24 @@ export const getJIRAClient = (baseURL: string, token: string): JIRAClient => {
 /** Add the specified label to the PR. */
 export const addLabels = async (client: github.GitHub, labelData: IssuesAddLabelsParams): Promise<void> => {
   try {
+    const jiraStatuses = [
+      'In Requirements',
+      'On Hold',
+      'Open',
+      'Ready For Development',
+      'In Progress',
+      'In UAT',
+      'Peer Review',
+      'Ready For Review',
+      'Ready To Merge',
+      'Closed',
+      'Ready To Release',
+    ];
+    const currentStatus = labelData.labels.filter((label) => jiraStatuses.includes(label));
+    if (currentStatus.length > 0) {
+      const statusLabelData = Object.assign({}, labelData, { labels: currentStatus });
+      await client.issues.removeLabels(statusLabelData);
+    }
     await client.issues.addLabels(labelData);
   } catch (error) {
     core.setFailed(error.message);
