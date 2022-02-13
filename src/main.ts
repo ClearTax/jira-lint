@@ -136,7 +136,8 @@ async function run(): Promise<void> {
       const podLabel = details?.project?.name || '';
       const hotfixLabel: string = getHotfixLabel(baseBranch);
       const typeLabel: string = details?.type?.name || '';
-      const labels: string[] = [podLabel, hotfixLabel, typeLabel].filter(isNotBlank);
+      const statusLabel: string = details?.status || '';
+      const labels: string[] = [statusLabel, podLabel, hotfixLabel, typeLabel].filter(isNotBlank);
       console.log('Adding lables -> ', labels);
 
       await addLabels(client, {

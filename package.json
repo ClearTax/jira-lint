@@ -13,7 +13,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/cleartax/jira-lint"
+    "url": "git+https://github.com/michaelstromer-clear/jira-lint"
   },
   "engines": {
     "node": ">= 13",
@@ -29,7 +29,7 @@
     "jira",
     "jira-issue"
   ],
-  "author": "cleartax",
+  "author": "michaelstromer-clear",
   "license": "MIT",
   "husky": {
     "hooks": {
