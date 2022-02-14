@@ -62,18 +62,17 @@ async function run(): Promise<void> {
     const prThreshold: number = PR_THRESHOLD ? Number(PR_THRESHOLD) : defaultAdditionsCount;
 
     const {
-      payload: {
-        repository,
-        organization: { login: owner },
-        pull_request: pullRequest,
-      },
+      payload: { repository, pull_request: pullRequest },
     } = github.context;
 
     if (typeof repository === 'undefined') {
       throw new Error(`Missing 'repository' from github action context.`);
     }
 
-    const { name: repo } = repository;
+    const {
+      name: repo,
+      owner: { login: owner },
+    } = repository;
 
     const {
       base: { ref: baseBranch },
