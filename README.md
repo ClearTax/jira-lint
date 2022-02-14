@@ -63,7 +63,7 @@ Example:
 ```yaml
 # ...
 steps:
-  - uses: cleartax/jira-lint@v0.0.1
+  - uses: cleartax/jira-lint@v0.1.0
     name: jira-lint
     # ...
 ```
