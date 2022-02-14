@@ -238,7 +238,7 @@ describe('getLabelsForDisplay()', () => {
 describe('JIRA Client', () => {
   // use this to test if the token is correct
   it.skip('should be able to access the issue', async () => {
-    const client = getJIRAClient('https://cleartaxtech.atlassian.net/', '<token_here>');
+    const client = getJIRAClient('https://cleartaxtech.atlassian.net/', '<username>', '<token_here>');
     const details = await client.getTicketDetails('ES-10');
     console.log({ details });
     expect(details).not.toBeNull();

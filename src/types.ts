@@ -113,6 +113,7 @@ export interface JIRADetails {
 }
 
 export interface JIRALintActionInputs {
+  JIRA_USER: string;
   JIRA_TOKEN: string;
   JIRA_BASE_URL: string;
   GITHUB_TOKEN: string;

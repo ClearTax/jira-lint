@@ -5,6 +5,9 @@ inputs:
   github-token:
     description: 'Token used to update PR description and add labels. Can be passed in using {{ secrets.GITHUB_TOKEN }}'
     required: true
+  jira-user:
+    description: 'JIRA username. Can be passed in using {{ secrets.JIRA_USER }}'
+    required: true
   jira-token:
     description: 'API Token used to access the JIRA REST API. Must have read access to your JIRA Projects & Issues.'
     required: true

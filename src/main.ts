@@ -24,6 +24,7 @@ import { PullRequestParams, JIRADetails, JIRALintActionInputs } from './types';
 import { DEFAULT_PR_ADDITIONS_THRESHOLD } from './constants';
 
 const getInputs = (): JIRALintActionInputs => {
+  const JIRA_USER: string = core.getInput('jira-user', { required: true });
   const JIRA_TOKEN: string = core.getInput('jira-token', { required: true });
   const JIRA_BASE_URL: string = core.getInput('jira-base-url', { required: true });
   const GITHUB_TOKEN: string = core.getInput('github-token', { required: true });
@@ -34,6 +35,7 @@ const getInputs = (): JIRALintActionInputs => {
   const ALLOWED_ISSUE_STATUSES: string = core.getInput('allowed_issue_statuses');
 
   return {
+    JIRA_USER,
     JIRA_TOKEN,
     GITHUB_TOKEN,
     BRANCH_IGNORE_PATTERN,
@@ -48,6 +50,7 @@ const getInputs = (): JIRALintActionInputs => {
 async function run(): Promise<void> {
   try {
     const {
+      JIRA_USER,
       JIRA_TOKEN,
       JIRA_BASE_URL,
       GITHUB_TOKEN,
@@ -129,7 +132,7 @@ async function run(): Promise<void> {
     const issueKey = issueKeys[issueKeys.length - 1];
     console.log(`JIRA key -> ${issueKey}`);
 
-    const { getTicketDetails } = getJIRAClient(JIRA_BASE_URL, JIRA_TOKEN);
+    const { getTicketDetails } = getJIRAClient(JIRA_BASE_URL, JIRA_USER, JIRA_TOKEN);
     const details: JIRADetails = await getTicketDetails(issueKey);
     if (details.key) {
       const podLabel = details?.project?.name || '';

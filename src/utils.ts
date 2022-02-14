@@ -38,11 +38,13 @@ export const getHotfixLabel = (baseBranch: string): string => {
   return '';
 };
 
-export const getJIRAClient = (baseURL: string, token: string): JIRAClient => {
+export const getJIRAClient = (baseURL: string, username: string, token: string): JIRAClient => {
+  const credentials = `${username}:${token}`;
+  const authorization = Buffer.from(credentials).toString('base64');
   const client = axios.create({
     baseURL: `${baseURL}/rest/api/3`,
     timeout: 2000,
-    headers: { Authorization: `Basic ${token}` },
+    headers: { Authorization: `Basic ${authorization}` },
   });
 
   const getIssue = async (id: string): Promise<JIRA.Issue> => {
@@ -355,7 +357,7 @@ export const getInvalidIssueStatusComment = (
   /** Threshold of additions allowed. */
   allowedStatuses: string
 ): string =>
-  `<p>:broken_heart: The detected issue is not in one of the allowed statuses :broken_heart: </p>    
+  `<p>:broken_heart: The detected issue is not in one of the allowed statuses :broken_heart: </p>
    <table>
      <tr>
         <th>Detected Status</th>
