@@ -209,7 +209,7 @@ async function run(): Promise<void> {
 
         // NOTE: 3. If there are invalid commit messages, post a comment to the PR and exit/fail
         if (!prCommitsValidationResults.valid) {
-          const containsOtherJiraKeys = prCommitsValidationResults.results.some((r) => r.hasJiraKey);
+          const containsOtherJiraKeys = prCommitsValidationResults.results.some((r) => !r.valid && r.hasJiraKey);
           const commitsWithoutJiraKeyComment = {
             ...commonPayload,
             body: getNoIdCommitMessagesComment(prCommitsValidationResults, containsOtherJiraKeys),
