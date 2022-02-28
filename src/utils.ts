@@ -186,7 +186,9 @@ Valid sample PR titles:
   ‣ 'DDTS-112 Build new CMS'
   ‣ 'TTEF-2 Fix React Native bug'
   ‣ 'INTG-332 Add logging to external api'
-`;
+
+<p><strong>TIP:</strong> If you're certain the title is correct, try closing and reopening the pull request as a work-around. Sometimes the request data to the action gets cached.</p>
+  `;
 };
 
 /** Get a comment based on story title and PR title similarity. */
