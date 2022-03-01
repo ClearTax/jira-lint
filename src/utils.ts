@@ -403,10 +403,10 @@ export const getNoIdCommitMessagesComment = (
         .map(
           (commit) => `‣ ${commit.sha} - ${commit.commit.message}
       `
-        )}`
+        )}
+        <hr />`
       : ''
   }
-<hr />
 <p> A JIRA Issue ID is missing from one or more of your commit messages! 🦄</p>
 <p>Commits without IDs:</p>
   ${validationResponse.results
