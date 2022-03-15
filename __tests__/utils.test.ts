@@ -123,6 +123,7 @@ describe('validateCommitMessages', () => {
     const commits = [
       createFakeCommit('ENG-117 great commit message'),
       createFakeCommit("Merge branch 'release/v1.8.0' into cdec-1270-uprev"),
+      createFakeCommit('Revert "ENG-117 great commit message"'),
       createFakeCommit('bad commit message'),
       createFakeCommit('Merge pull request #827 from invitation-homes/ENG-117-awesome-branch'),
       createFakeCommit('eng-117 bad commit message'),
@@ -140,12 +141,13 @@ describe('validateCommitMessages', () => {
     });
     expect(result.results[0].valid).toEqual(true);
     expect(result.results[1].valid).toEqual(true);
-    expect(result.results[2].valid).toEqual(false);
-    expect(result.results[3].valid).toEqual(true);
-    expect(result.results[4].valid).toEqual(false);
-    expect(result.results[5].valid).toEqual(true);
-    expect(result.results[6].valid).toEqual(false);
-    expect(result.results[7]).toMatchObject({
+    expect(result.results[2].valid).toEqual(true);
+    expect(result.results[3].valid).toEqual(false);
+    expect(result.results[4].valid).toEqual(true);
+    expect(result.results[5].valid).toEqual(false);
+    expect(result.results[6].valid).toEqual(true);
+    expect(result.results[7].valid).toEqual(false);
+    expect(result.results[8]).toMatchObject({
       valid: false,
       hasJiraKey: true,
     });
