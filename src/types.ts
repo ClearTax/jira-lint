@@ -133,6 +133,7 @@ export interface JIRAClient {
 }
 
 interface ValidateCommitMessagesResponseItem extends PullsListCommitsResponseItem {
+  hasJiraKey: boolean;
   valid: boolean;
 }
 

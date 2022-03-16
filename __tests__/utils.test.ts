@@ -128,6 +128,7 @@ describe('validateCommitMessages', () => {
       createFakeCommit('eng-117 bad commit message'),
       createFakeCommit('ENG-117 - okay commit message'),
       createFakeCommit('ENG-117bad commit message no space after issue ky'),
+      createFakeCommit('ENG-118 commit message for a different story'),
     ] as PullsListCommitsResponse;
     const jiraKey = 'ENG-117';
 
@@ -144,6 +145,10 @@ describe('validateCommitMessages', () => {
     expect(result.results[4].valid).toEqual(false);
     expect(result.results[5].valid).toEqual(true);
     expect(result.results[6].valid).toEqual(false);
+    expect(result.results[7]).toMatchObject({
+      valid: false,
+      hasJiraKey: true,
+    });
   });
 });
 

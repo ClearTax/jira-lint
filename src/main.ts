@@ -209,9 +209,11 @@ async function run(): Promise<void> {
 
         // NOTE: 3. If there are invalid commit messages, post a comment to the PR and exit/fail
         if (!prCommitsValidationResults.valid) {
+          const containsOtherJiraKeys = prCommitsValidationResults.results.some((r) => !r.valid && r.hasJiraKey);
+          console.log(`Contains other jira keys in commits? "${containsOtherJiraKeys}"`);
           const commitsWithoutJiraKeyComment = {
             ...commonPayload,
-            body: getNoIdCommitMessagesComment(prCommitsValidationResults),
+            body: getNoIdCommitMessagesComment(prCommitsValidationResults, containsOtherJiraKeys),
           };
           console.log('Adding comment for commits without Jira Issue Key');
           await addComment(client, commitsWithoutJiraKeyComment);

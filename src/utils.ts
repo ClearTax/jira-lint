@@ -14,7 +14,8 @@ import {
   MARKER_REGEX,
   BOT_BRANCH_PATTERNS,
   DEFAULT_BRANCH_PATTERNS,
-  JIRA_REGEX_MATCHER,
+  JIRA_BRANCH_REGEX_MATCHER,
+  JIRA_COMMIT_REGEX_MATCHER,
   HIDDEN_MARKER,
 } from './constants';
 import { JIRA, JIRADetails, JIRAClient, ValidateCommitMessagesResponse } from './types';
@@ -23,7 +24,7 @@ export const isBlank = (input: string): boolean => input.trim().length === 0;
 export const isNotBlank = (input: string): boolean => !isBlank(input);
 
 export const getJIRAIssueKey = (input: string): string => {
-  const matches = input.match(JIRA_REGEX_MATCHER);
+  const matches = input.match(JIRA_BRANCH_REGEX_MATCHER);
   const trimTrailingDash = (value: string): string => value.substring(0, value.length - 1);
 
   return matches?.length ? trimTrailingDash(matches[0]) : '';
@@ -159,6 +160,7 @@ export const validateCommitMessages = (
   const isMergeCommit = (message: string): boolean => /^Merge (branch|pull request)/i.test(message);
   const results = commits.map((commit) => ({
     ...commit,
+    hasJiraKey: commit.commit.message.match(JIRA_COMMIT_REGEX_MATCHER) !== null,
     valid: commit.commit.message.startsWith(`${jiraIssueKey} `) || isMergeCommit(commit.commit.message),
   }));
 
@@ -184,7 +186,9 @@ Valid sample PR titles:
   ‣ 'DDTS-112 Build new CMS'
   ‣ 'TTEF-2 Fix React Native bug'
   ‣ 'INTG-332 Add logging to external api'
-`;
+
+<p><strong>TIP:</strong> If you're certain the title is correct, try closing and reopening the pull request as a work-around. Sometimes the request data to the action gets cached.</p>
+  `;
 };
 
 /** Get a comment based on story title and PR title similarity. */
@@ -386,8 +390,23 @@ Valid sample branch names:
 };
 
 /** Get the comment body for pr with no JIRA id in one or more commit messages. */
-export const getNoIdCommitMessagesComment = (validationResponse: ValidateCommitMessagesResponse): string => {
-  return `<p> A JIRA Issue ID is missing from one or more of your commit messages! 🦄</p>
+export const getNoIdCommitMessagesComment = (
+  validationResponse: ValidateCommitMessagesResponse,
+  containsOtherJiraKeys: boolean
+): string => {
+  return `${
+    containsOtherJiraKeys
+      ? `<p> A different JIRA Issue ID was used one or more of your commit messages! 🦄</p>
+      <p>Commits with different IDs:</p>
+      ${validationResponse.results
+        .filter(({ valid, hasJiraKey }) => !valid && hasJiraKey)
+        .map(
+          (commit) => `‣ ${commit.sha} - ${commit.commit.message}
+      `
+        )}<hr />`
+      : ''
+  }
+<p> A JIRA Issue ID is missing from one or more of your commit messages! 🦄</p>
 <p>Commits without IDs:</p>
   ${validationResponse.results
     .filter(({ valid }) => !valid)
