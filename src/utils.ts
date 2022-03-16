@@ -158,11 +158,16 @@ export const validateCommitMessages = (
   jiraIssueKey: string
 ): ValidateCommitMessagesResponse => {
   const isMergeCommit = (message: string): boolean => /^Merge (branch|pull request)/i.test(message);
-  const results = commits.map((commit) => ({
-    ...commit,
-    hasJiraKey: commit.commit.message.match(JIRA_COMMIT_REGEX_MATCHER) !== null,
-    valid: commit.commit.message.startsWith(`${jiraIssueKey} `) || isMergeCommit(commit.commit.message),
-  }));
+  const isRevertCommit = (message: string): boolean => /^Revert "/i.test(message);
+  const results = commits.map((commit) => {
+    const { message } = commit.commit;
+
+    return {
+      ...commit,
+      hasJiraKey: message.match(JIRA_COMMIT_REGEX_MATCHER) !== null,
+      valid: message.startsWith(`${jiraIssueKey} `) || isMergeCommit(message) || isRevertCommit(message),
+    };
+  });
 
   return {
     valid: results.every((commitResult) => commitResult.valid),
