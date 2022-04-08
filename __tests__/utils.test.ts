@@ -130,6 +130,7 @@ describe('validateCommitMessages', () => {
     ${'ENG-117'} | ${'ENG-117 - contains space and hyphen after jira key'}                   | ${true}  | ${true}
     ${'ENG-117'} | ${'ENG-117bad commit message. no space after issue key.'}                 | ${false} | ${false}
     ${'ENG-117'} | ${'ENG-118 commit message for a different story'}                         | ${false} | ${true}
+    ${'ENG-117'} | ${'Great commit message jira: ENG-117'}                                   | ${true}  | ${true}
   `('should validate commit message "$commitMessage"', ({ jiraKey, commitMessage, isValid, hasJiraKey }) => {
     const commits = [createFakeCommit(commitMessage)] as PullsListCommitsResponse;
 
