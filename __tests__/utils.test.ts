@@ -119,6 +119,8 @@ describe('getJIRAIssueKey()', () => {
 
 describe('validateCommitMessages', () => {
   const createFakeCommit = (message: string): unknown => ({ sha: 'abc123', commit: { message } });
+  const createConvCmtMsg = (message: string, jiraKey: string): string => `${message}jira: ${jiraKey}`;
+
   it.each`
     jiraKey      | commitMessage                                                             | isValid  | hasJiraKey
     ${'ENG-117'} | ${'ENG-117 great commit message'}                                         | ${true}  | ${true}
@@ -130,7 +132,11 @@ describe('validateCommitMessages', () => {
     ${'ENG-117'} | ${'ENG-117 - contains space and hyphen after jira key'}                   | ${true}  | ${true}
     ${'ENG-117'} | ${'ENG-117bad commit message. no space after issue key.'}                 | ${false} | ${false}
     ${'ENG-117'} | ${'ENG-118 commit message for a different story'}                         | ${false} | ${true}
-    ${'ENG-117'} | ${'Great commit message jira: ENG-117'}                                   | ${true}  | ${true}
+    ${'ENG-117'} | ${'No newline jira: ENG-117'}                                             | ${false} | ${false}
+    ${'ENG-117'} | ${createConvCmtMsg('Single newline\n', 'ENG-117')}                        | ${true}  | ${true}
+    ${'ENG-117'} | ${createConvCmtMsg('Two newlines\n\n', 'ENG-117')}                        | ${true}  | ${true}
+    ${'ENG-118'} | ${createConvCmtMsg('Single newline; wrong jira key\n', 'ENG-117')}        | ${false} | ${true}
+    ${'ENG-118'} | ${createConvCmtMsg('Two newlines; wrong jira key\n', 'ENG-117')}          | ${false} | ${true}
   `('should validate commit message "$commitMessage"', ({ jiraKey, commitMessage, isValid, hasJiraKey }) => {
     const commits = [createFakeCommit(commitMessage)] as PullsListCommitsResponse;
 
