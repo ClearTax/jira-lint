@@ -118,39 +118,34 @@ describe('getJIRAIssueKey()', () => {
 });
 
 describe('validateCommitMessages', () => {
-  it('should validate that commit messages have the Jira Issue Key prepended', () => {
-    const createFakeCommit = (message: string): unknown => ({ sha: 'abc123', commit: { message } });
-    const commits = [
-      createFakeCommit('ENG-117 great commit message'),
-      createFakeCommit("Merge branch 'release/v1.8.0' into cdec-1270-uprev"),
-      createFakeCommit('Revert "ENG-117 great commit message"'),
-      createFakeCommit('bad commit message'),
-      createFakeCommit('Merge pull request #827 from invitation-homes/ENG-117-awesome-branch'),
-      createFakeCommit('eng-117 bad commit message'),
-      createFakeCommit('ENG-117 - okay commit message'),
-      createFakeCommit('ENG-117bad commit message no space after issue ky'),
-      createFakeCommit('ENG-118 commit message for a different story'),
-    ] as PullsListCommitsResponse;
-    const jiraKey = 'ENG-117';
+  const createFakeCommit = (message: string): unknown => ({ sha: 'abc123', commit: { message } });
+  const createConvCmtMsg = (message: string, jiraKey: string): string => `${message}jira: ${jiraKey}`;
+
+  it.each`
+    jiraKey      | commitMessage                                                             | isValid  | hasJiraKey
+    ${'ENG-117'} | ${'ENG-117 great commit message'}                                         | ${true}  | ${true}
+    ${'ENG-117'} | ${"Merge branch 'release/v1.8.0' into cdec-1270-uprev"}                   | ${true}  | ${false}
+    ${'ENG-117'} | ${'Revert "ENG-117 ignore revert commits"'}                               | ${true}  | ${false}
+    ${'ENG-117'} | ${'bad commit message. missing jira key'}                                 | ${false} | ${false}
+    ${'ENG-117'} | ${'Merge pull request #827 from invitation-homes/ENG-117-awesome-branch'} | ${true}  | ${false}
+    ${'ENG-117'} | ${'eng-117 bad commit message. all lowercase.'}                           | ${false} | ${false}
+    ${'ENG-117'} | ${'ENG-117 - contains space and hyphen after jira key'}                   | ${true}  | ${true}
+    ${'ENG-117'} | ${'ENG-117bad commit message. no space after issue key.'}                 | ${false} | ${false}
+    ${'ENG-117'} | ${'ENG-118 commit message for a different story'}                         | ${false} | ${true}
+    ${'ENG-117'} | ${'No newline jira: ENG-117'}                                             | ${false} | ${false}
+    ${'ENG-117'} | ${createConvCmtMsg('Single newline\n', 'ENG-117')}                        | ${true}  | ${true}
+    ${'ENG-117'} | ${createConvCmtMsg('Two newlines\n\n', 'ENG-117')}                        | ${true}  | ${true}
+    ${'ENG-118'} | ${createConvCmtMsg('Single newline; wrong jira key\n', 'ENG-117')}        | ${false} | ${true}
+    ${'ENG-118'} | ${createConvCmtMsg('Two newlines; wrong jira key\n', 'ENG-117')}          | ${false} | ${true}
+  `('should validate commit message "$commitMessage"', ({ jiraKey, commitMessage, isValid, hasJiraKey }) => {
+    const commits = [createFakeCommit(commitMessage)] as PullsListCommitsResponse;
 
     const result = validateCommitMessages(commits, jiraKey);
 
-    expect(result).toEqual({
-      valid: false,
-      results: expect.any(Array),
-    });
-    expect(result.results[0].valid).toEqual(true);
-    expect(result.results[1].valid).toEqual(true);
-    expect(result.results[2].valid).toEqual(true);
-    expect(result.results[3].valid).toEqual(false);
-    expect(result.results[4].valid).toEqual(true);
-    expect(result.results[5].valid).toEqual(false);
-    expect(result.results[6].valid).toEqual(true);
-    expect(result.results[7].valid).toEqual(false);
-    expect(result.results[8]).toMatchObject({
-      valid: false,
-      hasJiraKey: true,
-    });
+    expect(result.valid).toEqual(isValid);
+    expect(result.results).toEqual(expect.any(Array));
+    expect(result.results[0].valid).toEqual(isValid);
+    expect(result.results[0].hasJiraKey).toEqual(hasJiraKey);
   });
 });
 
