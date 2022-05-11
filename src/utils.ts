@@ -185,7 +185,7 @@ export const validatePrTitle = (title: string, issueKey: string): boolean => {
 
 /** Get the comment body for pr with no JIRA id in the branch name. */
 export const getNoIdPrTitleComment = (title: string): string => {
-  return `<p> A JIRA Issue ID is missing from your PR title! 🦄</p>
+  return `<h3>❌ PR TITLE</h3><p> A JIRA Issue ID is missing from your PR title! 🦄</p>
 <p>Your title: ${title}</p>
 <hr />
 <p>Please follow <a href="https://github.com/invitation-homes/technology-decisions/blob/main/0014-tracking-jira-issues-in-git.md">our standards</a> for PR titles.</p>
@@ -195,7 +195,7 @@ Valid sample PR titles:
   ‣ 'TTEF-2 Fix React Native bug'
   ‣ 'INTG-332 Add logging to external api'
 
-<p><strong>TIP:</strong> If you're certain the title is correct, try closing and reopening the pull request as a work-around. Sometimes the request data to the action gets cached.</p>
+<p><strong>💡 TIP:</strong> If you're certain the title is correct, try closing and reopening the pull request as a work-around. Sometimes the request data to the action gets cached.</p>
   `;
 };
 
@@ -384,7 +384,7 @@ export const getHugePrComment = (
 
 /** Get the comment body for pr with no JIRA id in the branch name. */
 export const getNoIdComment = (branch: string): string => {
-  return `<p> A JIRA Issue ID is missing from your branch name! 🦄</p>
+  return `<h3>❌ BRANCH NAME</h3><p> A JIRA Issue ID is missing from your branch name! 🦄</p>
 <p>Your branch: ${branch}</p>
 <hr />
 <p>Please follow <a href="https://github.com/invitation-homes/technology-decisions/blob/main/0014-tracking-jira-issues-in-git.md">our standards</a> for branch naming.</p>
@@ -404,7 +404,7 @@ export const getNoIdCommitMessagesComment = (
 ): string => {
   return `${
     containsOtherJiraKeys
-      ? `<p> A different JIRA Issue ID was used one or more of your commit messages! 🦄</p>
+      ? `<h3>❌ COMMIT MESSAGE(S) - DIFFERENT JIRA KEYS</h3><p> A different JIRA Issue ID was used one or more of your commit messages! 🦄</p>
       <p>Commits with different IDs:</p>
       ${validationResponse.results
         .filter(({ valid, hasJiraKey }) => !valid && hasJiraKey)
@@ -414,6 +414,7 @@ export const getNoIdCommitMessagesComment = (
         )}<hr />`
       : ''
   }
+<h3>❌ COMMIT MESSAGE(S) - MISSING JIRA KEYS</h3>
 <p> A JIRA Issue ID is missing from one or more of your commit messages! 🦄</p>
 <p>Commits without IDs:</p>
   ${validationResponse.results
