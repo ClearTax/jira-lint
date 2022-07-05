@@ -397,28 +397,26 @@ Valid sample branch names:
 `;
 };
 
+/** Get the comment body for pr with differnt JIRA ids in one or more commit messages. */
+export const getDifferentIdCommitMessagesComment = (validationResponse: ValidateCommitMessagesResponse): string => {
+  return `<h3>❌ COMMIT MESSAGE(S) - DIFFERENT JIRA KEYS</h3><p> A different JIRA Issue ID was used one or more of your commit messages! 🦄</p>
+  <p>Commits with different IDs:</p>
+  ${validationResponse.results
+    .filter(({ valid, hasJiraKey }) => !valid && hasJiraKey)
+    .map(
+      (commit) => `‣ ${commit.sha} - ${commit.commit.message}
+  `
+    )}<hr />`;
+};
+
 /** Get the comment body for pr with no JIRA id in one or more commit messages. */
-export const getNoIdCommitMessagesComment = (
-  validationResponse: ValidateCommitMessagesResponse,
-  containsOtherJiraKeys: boolean
-): string => {
-  return `${
-    containsOtherJiraKeys
-      ? `<h3>❌ COMMIT MESSAGE(S) - DIFFERENT JIRA KEYS</h3><p> A different JIRA Issue ID was used one or more of your commit messages! 🦄</p>
-      <p>Commits with different IDs:</p>
-      ${validationResponse.results
-        .filter(({ valid, hasJiraKey }) => !valid && hasJiraKey)
-        .map(
-          (commit) => `‣ ${commit.sha} - ${commit.commit.message}
-      `
-        )}<hr />`
-      : ''
-  }
-<h3>❌ COMMIT MESSAGE(S) - MISSING JIRA KEYS</h3>
+export const getNoIdCommitMessagesComment = (validationResponse: ValidateCommitMessagesResponse): string => {
+  return `<h3>❌ COMMIT MESSAGE(S) - MISSING JIRA KEYS</h3>
 <p> A JIRA Issue ID is missing from one or more of your commit messages! 🦄</p>
 <p>Commits without IDs:</p>
   ${validationResponse.results
     .filter(({ valid }) => !valid)
+    .filter(({ hasJiraKey }) => !hasJiraKey)
     .map(
       (commit) => `‣ ${commit.sha} - ${commit.commit.message}
   `
