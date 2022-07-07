@@ -110,6 +110,30 @@ async function run(): Promise<void> {
     console.log('Base branch -> ', baseBranch);
     console.log('Head branch -> ', headBranch);
 
+    const issueKeys = getJIRAIssueKeys(headBranch);
+    const commits = getCommitMessagesFromPullRequest(...)
+    for (commit in commits) {
+      issueKeysCommits = getJIRAIssueKeys(commit);
+      if (!issueKeys.length) {
+        // If not merge commit, fail
+        // (^Merge (?:remote-tracking )?branch(?:es)? (?:.+and )?['"]?(?:[^']+origin\/)?([^']+)['"]?(?: of .*){0,1} into ['"]?([^']+)['"]?$)
+        ...
+      }
+      issueKeys.append(issueKeysCommits)
+    }
+    // Remove duplicates
+    issueKeys = Set(issueKeys)
+
+    if (!issueKeys.length) {
+      const comment: IssuesCreateCommentParams = {
+        ...commonPayload,
+        body: getNoIdComment(headBranch),
+      };
+      await addComment(client, comment);
+
+      core.setFailed('JIRA issue id is missing in your branch.');
+      process.exit(1);
+
     if (shouldSkipBranchLint(headBranch, BRANCH_IGNORE_PATTERN)) {
       process.exit(0);
     }
