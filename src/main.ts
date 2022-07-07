@@ -110,7 +110,6 @@ async function run(): Promise<void> {
     console.log('Base branch -> ', baseBranch);
     console.log('Head branch -> ', headBranch);
 
-    /** Verify if a PRODUCT tag exists */
     const issueKeys = getJIRAIssueKeys(headBranch);
     const commits = getCommitMessagesFromPullRequest(...)
     for (commit in commits) {
