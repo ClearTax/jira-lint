@@ -21,6 +21,7 @@ import {
   getInvalidIssueStatusComment,
   getCommits,
   validateCommitMessages,
+  getDifferentIdCommitMessagesComment,
   getNoIdCommitMessagesComment,
   validatePrTitle,
   getNoIdPrTitleComment,
@@ -211,12 +212,26 @@ async function run(): Promise<void> {
         if (!prCommitsValidationResults.valid) {
           const containsOtherJiraKeys = prCommitsValidationResults.results.some((r) => !r.valid && r.hasJiraKey);
           console.log(`Contains other jira keys in commits? "${containsOtherJiraKeys}"`);
-          const commitsWithoutJiraKeyComment = {
-            ...commonPayload,
-            body: getNoIdCommitMessagesComment(prCommitsValidationResults, containsOtherJiraKeys),
-          };
-          console.log('Adding comment for commits without Jira Issue Key');
-          await addComment(client, commitsWithoutJiraKeyComment);
+
+          if (containsOtherJiraKeys) {
+            const commitsWithDifferentJiraKeyComment = {
+              ...commonPayload,
+              body: getDifferentIdCommitMessagesComment(prCommitsValidationResults),
+            };
+            console.log('Adding comment for commits without Jira Issue Key');
+            await addComment(client, commitsWithDifferentJiraKeyComment);
+          }
+
+          const commitsWithoutJiraKeys = prCommitsValidationResults.results.filter((commit) => !commit.hasJiraKey);
+          if (commitsWithoutJiraKeys.length) {
+            const commitsWithoutJiraKeyComment = {
+              ...commonPayload,
+              body: getNoIdCommitMessagesComment(prCommitsValidationResults),
+            };
+            console.log('Adding comment for commits without Jira Issue Key');
+            await addComment(client, commitsWithoutJiraKeyComment);
+          }
+
           core.setFailed(`One or more commits did not prepend the Jira Issue Key - ${issueKey}`);
           process.exit(1);
         }
