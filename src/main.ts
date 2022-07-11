@@ -122,6 +122,7 @@ async function run(): Promise<void> {
         // If not merge commit, fail
         // (^Merge (?:remote-tracking )?branch(?:es)? (?:.+and )?['"]?(?:[^']+origin\/)?([^']+)['"]?(?: of .*){0,1} into ['"]?([^']+)['"]?$)
         ...
+        console.log('The if condition is working.');
       }
       issueKeys.append(issueKeysCommits)
     }
