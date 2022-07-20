@@ -107,8 +107,8 @@ async function run(): Promise<void> {
       process.exit(1);
     }
 
-    console.log('Base branch -> ', baseBranch);
-    console.log('Head branch -> ', headBranch);
+    console.log('Base branch --> ', baseBranch);
+    console.log('Head branch --> ', headBranch);
 
     if (shouldSkipBranchLint(headBranch, BRANCH_IGNORE_PATTERN)) {
       process.exit(0);
