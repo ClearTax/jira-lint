@@ -3,4 +3,5 @@ lib/
 node_modules/
 !.*.js
 !*.config.js
+src/constants.ts
 

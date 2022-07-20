@@ -25,3 +25,7 @@ export const JIRA_REGEX_MATCHER = /\d+-(([A-Z0-9]{1,10})|[a-z0-9]{1,10})/g;
  * considered "too huge to review".
  */
 export const DEFAULT_PR_ADDITIONS_THRESHOLD = 800;
+
+export const COMMIT_MESSAGE_MATCHER = /(^\[PRODUCT\-[0-9]+\])|(^Merge (?:remote-tracking )?branch(?:es)? (?:.+and )?[\'\"]?(?:[^\']+origin\/)?([^\']+)[\'\"]?(?: of .*){0,1} into [\'\"]?([^\']+)[\'\"]?$)/;
+
+export const JIRA_TICKET_MATCHER = /(PRODUCT-[0-9]+)/;

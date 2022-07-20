@@ -21,7 +21,7 @@ import {
   getInvalidIssueStatusComment,
 } from './utils';
 import { PullRequestParams, JIRADetails, JIRALintActionInputs } from './types';
-import { DEFAULT_PR_ADDITIONS_THRESHOLD } from './constants';
+import { DEFAULT_PR_ADDITIONS_THRESHOLD, COMMIT_MESSAGE_MATCHER, JIRA_TICKET_MATCHER } from './constants';
 
 const getInputs = (): JIRALintActionInputs => {
   const JIRA_TOKEN: string = core.getInput('jira-token', { required: true });
@@ -107,9 +107,8 @@ async function run(): Promise<void> {
       process.exit(1);
     }
 
-    console.log('#Zero';
-    console.log('Base branch --> ', baseBranch);
-    console.log('Head branch --> ', headBranch);
+    console.log('Base branch -> ', baseBranch);
+    console.log('Head branch -> ', headBranch);
 
     if (shouldSkipBranchLint(headBranch, BRANCH_IGNORE_PATTERN)) {
       process.exit(0);
@@ -118,24 +117,28 @@ async function run(): Promise<void> {
     // New logic. Validate jira ticket usign commit message
     const { getTicketDetails } = getJIRAClient(JIRA_BASE_URL, JIRA_TOKEN);
 
-    const { eventName, payload: {repository: ghrepo, pull_request: pr} } = github.context;
-    let commitsToValidate:any = [];
-    
-    console.log('# Start PR case')
+    const {
+      eventName,
+      payload: { repository: ghrepo, pull_request: pr },
+    } = github.context;
+    let commitsToValidate = [];
+
+    console.log('# Start PR case');
     if (eventName === 'pull_request') {
       // github client with given token
       const octokit = new github.GitHub(GITHUB_TOKEN);
-      
+
       const commitsListed = await octokit.pulls.listCommits({
-        owner: ghrepo.owner.login,
-        repo: ghrepo.name,
-        pull_number: pr.number,
+        owner: ghrepo?.owner?.login ?? '',
+        repo: ghrepo?.name ?? '',
+        // eslint-disable-next-line @typescript-eslint/camelcase
+        pull_number: pr?.number ?? 0,
       });
 
       const commits = commitsListed.data;
-      commits.forEach(commit => {
+      for (const commit of commits) {
         commitsToValidate.push(commit.commit);
-      });
+      }
     }
 
     console.log('# Start push case');
@@ -144,30 +147,30 @@ async function run(): Promise<void> {
       const commits = github.context.payload.commits;
       commitsToValidate = commitsToValidate.concat(commits);
     }
-    
+
     // Check messages
     let result = true;
-    let jiraTicket:string = '';
+    let jiraTicket = '';
 
     //Validate commits
-    console.log('# Validate commits')
+    console.log('# Validate commits');
     for (const commit of commitsToValidate) {
-      if(!validateCommits(commit.message)){
+      if (!validateCommits(commit.message)) {
         core.info(`- failed: "${commit.message}" Your commit messages should start with "[PRODUCT-XXXX]".`);
         result = false;
-      }else {
+      } else {
         console.log(`"${commit.message}" is valid.`);
         jiraTicket = getJiraTicket(commit.message);
         const details: JIRADetails = await getTicketDetails(jiraTicket);
-        
+
         if (details.key) {
           console.log(`Ticket ${jiraTicket} exist.`);
-        }else {
+        } else {
           core.info(`- failed: The ticketid ${jiraTicket} doesn´t exist.`);
           result = false;
         }
       }
-    };
+    }
 
     // Throw error in case of failed test
     if (!result) {
@@ -190,10 +193,8 @@ async function run(): Promise<void> {
 
     // use the last match (end of the branch name)
     const issueKey = issueKeys[issueKeys.length - 1];
-    console.log('#Two');
     console.log(`JIRA key -> ${issueKey}`);
 
-    
     const details: JIRADetails = await getTicketDetails(issueKey);
     if (details.key) {
       const podLabel = details?.project?.name || '';
@@ -267,17 +268,15 @@ async function run(): Promise<void> {
   }
 }
 
-function validateCommits(commitMessage: string) {
-  let pattern = /(^\[PRODUCT\-[0-9]+\])|(^Merge (?:remote-tracking )?branch(?:es)? (?:.+and )?[\'\"]?(?:[^\']+origin\/)?([^\']+)[\'\"]?(?: of .*){0,1} into [\'\"]?([^\']+)[\'\"]?$)/
-  let regex = new RegExp(pattern)
-  return regex.test(commitMessage)
+function validateCommits(commitMessage: string): boolean {
+  const regex = new RegExp(COMMIT_MESSAGE_MATCHER);
+  return regex.test(commitMessage);
 }
 
-function getJiraTicket(commitMessage: string) {
-  let pattern = /(PRODUCT-[0-9]+)/
-  const regex = new RegExp(pattern)
-  let matchTicket = regex.exec(commitMessage)
-  return (matchTicket && matchTicket.length > 0)  ? matchTicket[0] : '';
+function getJiraTicket(commitMessage: string): string {
+  const regex = new RegExp(JIRA_TICKET_MATCHER);
+  const matchTicket = regex.exec(commitMessage);
+  return matchTicket && matchTicket.length > 0 ? matchTicket[0] : '';
 }
 
 run();
