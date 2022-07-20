@@ -215,7 +215,7 @@ export const shouldSkipBranchLint = (branch: string, additionalIgnorePattern?: s
     );
     return true;
   }
-
+  console.log('#One');
   console.log(`branch '${branch}' does not match ignore pattern provided in 'skip-branches' option:`, ignorePattern);
   return false;
 };

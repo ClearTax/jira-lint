@@ -107,6 +107,7 @@ async function run(): Promise<void> {
       process.exit(1);
     }
 
+    console.log('#Zero';
     console.log('Base branch --> ', baseBranch);
     console.log('Head branch --> ', headBranch);
 
@@ -189,6 +190,7 @@ async function run(): Promise<void> {
 
     // use the last match (end of the branch name)
     const issueKey = issueKeys[issueKeys.length - 1];
+    console.log('#Two');
     console.log(`JIRA key -> ${issueKey}`);
 
     
@@ -198,6 +200,7 @@ async function run(): Promise<void> {
       const hotfixLabel: string = getHotfixLabel(baseBranch);
       const typeLabel: string = details?.type?.name || '';
       const labels: string[] = [podLabel, hotfixLabel, typeLabel].filter(isNotBlank);
+      console.log('Three');
       console.log('Adding lables -> ', labels);
 
       await addLabels(client, {
