@@ -114,11 +114,72 @@ async function run(): Promise<void> {
       process.exit(0);
     }
 
-    const issueKeys = getJIRAIssueKeys(headBranch);
+    // New logic. Validate jira ticket usign commit message
+    const { getTicketDetails } = getJIRAClient(JIRA_BASE_URL, JIRA_TOKEN);
+
+    const { eventName, payload: {repository: ghrepo, pull_request: pr} } = github.context;
+    let commitsToValidate:any = [];
+    
+    console.log('# Start PR case')
+    if (eventName === 'pull_request') {
+      // github client with given token
+      const octokit = new github.GitHub(GITHUB_TOKEN);
+      
+      const commitsListed = await octokit.pulls.listCommits({
+        owner: ghrepo.owner.login,
+        repo: ghrepo.name,
+        pull_number: pr.number,
+      });
+
+      const commits = commitsListed.data;
+      commits.forEach(commit => {
+        commitsToValidate.push(commit.commit);
+      });
+    }
+
+    console.log('# Start push case');
+    if (eventName === 'push') {
+      //Get the JSON webhook payload for the event that triggered the workflow
+      const commits = github.context.payload.commits;
+      commitsToValidate = commitsToValidate.concat(commits);
+    }
+    
+    // Check messages
+    let result = true;
+    let jiraTicket:string = '';
+
+    //Validate commits
+    console.log('# Validate commits')
+    for (const commit of commitsToValidate) {
+      if(!validateCommits(commit.message)){
+        core.info(`- failed: "${commit.message}" Your commit messages should start with "[PRODUCT-XXXX]".`);
+        result = false;
+      }else {
+        console.log(`"${commit.message}" is valid.`);
+        jiraTicket = getJiraTicket(commit.message);
+        const details: JIRADetails = await getTicketDetails(jiraTicket);
+        
+        if (details.key) {
+          console.log(`Ticket ${jiraTicket} exist.`);
+        }else {
+          core.info(`- failed: The ticketid ${jiraTicket} doesn´t exist.`);
+          result = false;
+        }
+      }
+    };
+
+    // Throw error in case of failed test
+    if (!result) {
+      core.setFailed('The commit message is not valid.');
+      process.exit(1);
+    }
+    // End new logi
+
+    const issueKeys = getJIRAIssueKeys(jiraTicket);
     if (!issueKeys.length) {
       const comment: IssuesCreateCommentParams = {
         ...commonPayload,
-        body: getNoIdComment(headBranch),
+        body: getNoIdComment(jiraTicket),
       };
       await addComment(client, comment);
 
@@ -130,7 +191,7 @@ async function run(): Promise<void> {
     const issueKey = issueKeys[issueKeys.length - 1];
     console.log(`JIRA key -> ${issueKey}`);
 
-    const { getTicketDetails } = getJIRAClient(JIRA_BASE_URL, JIRA_TOKEN);
+    
     const details: JIRADetails = await getTicketDetails(issueKey);
     if (details.key) {
       const podLabel = details?.project?.name || '';
@@ -189,7 +250,7 @@ async function run(): Promise<void> {
     } else {
       const comment: IssuesCreateCommentParams = {
         ...commonPayload,
-        body: getNoIdComment(headBranch),
+        body: getNoIdComment(jiraTicket),
       };
       await addComment(client, comment);
 
@@ -201,6 +262,19 @@ async function run(): Promise<void> {
     core.setFailed(error.message);
     process.exit(1);
   }
+}
+
+function validateCommits(commitMessage: string) {
+  let pattern = /(^\[PRODUCT\-[0-9]+\])|(^Merge (?:remote-tracking )?branch(?:es)? (?:.+and )?[\'\"]?(?:[^\']+origin\/)?([^\']+)[\'\"]?(?: of .*){0,1} into [\'\"]?([^\']+)[\'\"]?$)/
+  let regex = new RegExp(pattern)
+  return regex.test(commitMessage)
+}
+
+function getJiraTicket(commitMessage: string) {
+  let pattern = /(PRODUCT-[0-9]+)/
+  const regex = new RegExp(pattern)
+  let matchTicket = regex.exec(commitMessage)
+  return (matchTicket && matchTicket.length > 0)  ? matchTicket[0] : '';
 }
 
 run();
