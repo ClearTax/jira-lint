@@ -19,9 +19,11 @@ import {
   updatePrDetails,
   isIssueStatusValid,
   getInvalidIssueStatusComment,
+  validateCommits,
+  getJiraTicket,
 } from './utils';
 import { PullRequestParams, JIRADetails, JIRALintActionInputs } from './types';
-import { DEFAULT_PR_ADDITIONS_THRESHOLD, COMMIT_MESSAGE_MATCHER, JIRA_TICKET_MATCHER } from './constants';
+import { DEFAULT_PR_ADDITIONS_THRESHOLD } from './constants';
 
 const getInputs = (): JIRALintActionInputs => {
   const JIRA_TOKEN: string = core.getInput('jira-token', { required: true });
@@ -114,9 +116,6 @@ async function run(): Promise<void> {
       process.exit(0);
     }
 
-    // New logic. Validate jira ticket usign commit message
-    const { getTicketDetails } = getJIRAClient(JIRA_BASE_URL, JIRA_TOKEN);
-
     const {
       eventName,
       payload: { repository: ghrepo, pull_request: pr },
@@ -125,10 +124,7 @@ async function run(): Promise<void> {
 
     console.log('# Start PR case');
     if (eventName === 'pull_request') {
-      // github client with given token
-      const octokit = new github.GitHub(GITHUB_TOKEN);
-
-      const commitsListed = await octokit.pulls.listCommits({
+      const commitsListed = await client.pulls.listCommits({
         owner: ghrepo?.owner?.login ?? '',
         repo: ghrepo?.name ?? '',
         // eslint-disable-next-line @typescript-eslint/camelcase
@@ -154,19 +150,20 @@ async function run(): Promise<void> {
 
     //Validate commits
     console.log('# Validate commits');
+    const { getTicketDetails } = getJIRAClient(JIRA_BASE_URL, JIRA_TOKEN);
     for (const commit of commitsToValidate) {
       if (!validateCommits(commit.message)) {
-        core.info(`- failed: "${commit.message}" Your commit messages should start with "[PRODUCT-XXXX]".`);
+        core.error(`Failed: "${commit.message}" Your commit messages should start with "[PRODUCT-XXXX]".`);
         result = false;
       } else {
         console.log(`"${commit.message}" is valid.`);
         jiraTicket = getJiraTicket(commit.message);
-        const details: JIRADetails = await getTicketDetails(jiraTicket);
-
-        if (details.key) {
-          console.log(`Ticket ${jiraTicket} exist.`);
-        } else {
-          core.info(`- failed: The ticketid ${jiraTicket} doesn´t exist.`);
+        try {
+          const details: JIRADetails = await getTicketDetails(jiraTicket);
+          console.log(`Ticket ${details.key} exist.`);
+        } catch (error) {
+          //If the ticket-id doesn´t exist, the Jira client raise an exception (404 request status)
+          core.error(`Failed: The ticketid ${jiraTicket} doesn´t exist.`);
           result = false;
         }
       }
@@ -177,7 +174,6 @@ async function run(): Promise<void> {
       core.setFailed('The commit message is not valid.');
       process.exit(1);
     }
-    // End new logi
 
     const issueKeys = getJIRAIssueKeys(jiraTicket);
     if (!issueKeys.length) {
@@ -266,17 +262,6 @@ async function run(): Promise<void> {
     core.setFailed(error.message);
     process.exit(1);
   }
-}
-
-function validateCommits(commitMessage: string): boolean {
-  const regex = new RegExp(COMMIT_MESSAGE_MATCHER);
-  return regex.test(commitMessage);
-}
-
-function getJiraTicket(commitMessage: string): string {
-  const regex = new RegExp(JIRA_TICKET_MATCHER);
-  const matchTicket = regex.exec(commitMessage);
-  return matchTicket && matchTicket.length > 0 ? matchTicket[0] : '';
 }
 
 run();

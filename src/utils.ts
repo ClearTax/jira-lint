@@ -9,6 +9,8 @@ import {
   DEFAULT_BRANCH_PATTERNS,
   JIRA_REGEX_MATCHER,
   HIDDEN_MARKER,
+  COMMIT_MESSAGE_MATCHER,
+  JIRA_TICKET_MATCHER,
 } from './constants';
 import { JIRA, JIRADetails, JIRAClient } from './types';
 
@@ -369,3 +371,14 @@ export const getInvalidIssueStatusComment = (
    </table>
    <p>Please ensure your jira story is in one of the allowed statuses</p>
   `;
+
+export const validateCommits = (commitMessage: string): boolean => {
+  const regex = new RegExp(COMMIT_MESSAGE_MATCHER);
+  return regex.test(commitMessage);
+};
+
+export const getJiraTicket = (commitMessage: string): string => {
+  const regex = new RegExp(JIRA_TICKET_MATCHER);
+  const matchTicket = regex.exec(commitMessage);
+  return matchTicket && matchTicket.length > 0 ? matchTicket[0] : '';
+};
