@@ -169,9 +169,8 @@ async function run(): Promise<void> {
       }
     }
 
-    // Throw error in case of failed test
+    // End the excecution in case of any validation fails
     if (!result) {
-      core.setFailed('The commit message is not valid.');
       process.exit(1);
     }
 
