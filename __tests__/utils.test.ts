@@ -123,15 +123,15 @@ describe('validateCommitMessages', () => {
 
   it.each`
     jiraKey      | commitMessage                                                             | isValid  | hasJiraKey
-    ${'ENG-117'} | ${'ENG-117 great commit message'}                                         | ${true}  | ${true}
+    ${'ENG-117'} | ${'ENG-117 great commit message, wrong format'}                           | ${false} | ${false}
     ${'ENG-117'} | ${"Merge branch 'release/v1.8.0' into cdec-1270-uprev"}                   | ${true}  | ${false}
     ${'ENG-117'} | ${'Revert "ENG-117 ignore revert commits"'}                               | ${true}  | ${false}
     ${'ENG-117'} | ${'bad commit message. missing jira key'}                                 | ${false} | ${false}
     ${'ENG-117'} | ${'Merge pull request #827 from invitation-homes/ENG-117-awesome-branch'} | ${true}  | ${false}
     ${'ENG-117'} | ${'eng-117 bad commit message. all lowercase.'}                           | ${false} | ${false}
-    ${'ENG-117'} | ${'ENG-117 - contains space and hyphen after jira key'}                   | ${true}  | ${true}
+    ${'ENG-117'} | ${'ENG-117 - contains space and hyphen after jira key'}                   | ${false} | ${false}
     ${'ENG-117'} | ${'ENG-117bad commit message. no space after issue key.'}                 | ${false} | ${false}
-    ${'ENG-117'} | ${'ENG-118 commit message for a different story'}                         | ${false} | ${true}
+    ${'ENG-117'} | ${'ENG-118 commit message for a different story'}                         | ${false} | ${false}
     ${'ENG-117'} | ${'No newline jira: ENG-117'}                                             | ${false} | ${false}
     ${'ENG-117'} | ${createConvCmtMsg('Single newline\n', 'ENG-117')}                        | ${true}  | ${true}
     ${'ENG-117'} | ${createConvCmtMsg('Two newlines\n\n', 'ENG-117')}                        | ${true}  | ${true}
