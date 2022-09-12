@@ -161,8 +161,7 @@ export const validateCommitMessages = (
   const isRevertCommit = (message: string): boolean => /^Revert "/i.test(message);
   const results = commits.map((commit) => {
     const { message } = commit.commit;
-    const hasCorrectJiraKey =
-      message.startsWith(`${jiraIssueKey} `) || message.match(new RegExp(`\njira: ${jiraIssueKey}`)) !== null;
+    const hasCorrectJiraKey = message.match(new RegExp(`\njira: ${jiraIssueKey}`)) !== null;
     const hasAnyJiraKey = message.match(JIRA_COMMIT_REGEX_MATCHER) !== null;
 
     return {
@@ -423,11 +422,13 @@ export const getNoIdCommitMessagesComment = (validationResponse: ValidateCommitM
     )}
 <hr />
 <p>Please follow <a href="https://github.com/invitation-homes/technology-decisions/blob/main/0014-tracking-jira-issues-in-git.md">our standards</a> for commit messages.</p>
-Valid sample commit messages:
+Example of a valid commit message:</p>
+<pre>
+<code>feat: build new CMS</code>
+<br />
+<code>jira: DDTS-112</code></pre>
 
-  ‣ 'DDTS-112 Build new CMS'
-  ‣ 'TTEF-2 Fix react-native bug'
-  ‣ 'INTG-332 Add logging to external api'
+<p>Refer to <a href="https://github.com/invitation-homes/technology-decisions/blob/main/0014-tracking-jira-issues-in-git.md" target="_blank">our standards</a> for more examples and information.</p>
 `;
 };
 
