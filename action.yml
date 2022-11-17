@@ -24,7 +24,7 @@ inputs:
     required: false
     default: 800
 runs:
-  using: 'node12'
+  using: 'node16'
   main: 'lib/index.js'
 branding:
   icon: 'check-square'
