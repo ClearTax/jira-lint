@@ -195,6 +195,7 @@ Valid sample PR titles:
   ‣ 'INTG-332 Add logging to external api'
 
 <p><strong>💡 TIP:</strong> If you're certain the title is correct, try closing and reopening the pull request as a work-around. Sometimes the request data to the action gets cached.</p>
+<p><strong>🤔 Why?</strong> So that it will automatically show up in the Development section of the Jira issue! 🚀</p>
   `;
 };
 
