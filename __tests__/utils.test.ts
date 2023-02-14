@@ -133,6 +133,7 @@ describe('validateCommitMessages', () => {
     ${'ENG-117'} | ${'ENG-117bad commit message. no space after issue key.'}                 | ${false} | ${false}
     ${'ENG-117'} | ${'ENG-118 commit message for a different story'}                         | ${false} | ${false}
     ${'ENG-117'} | ${'No newline jira: ENG-117'}                                             | ${false} | ${false}
+    ${'ENG-117'} | ${'docs: update README no jira key'}                                      | ${true}  | ${false}
     ${'ENG-117'} | ${createConvCmtMsg('Single newline\n', 'ENG-117')}                        | ${true}  | ${true}
     ${'ENG-117'} | ${createConvCmtMsg('Two newlines\n\n', 'ENG-117')}                        | ${true}  | ${true}
     ${'ENG-118'} | ${createConvCmtMsg('Single newline; wrong jira key\n', 'ENG-117')}        | ${false} | ${true}

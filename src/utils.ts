@@ -167,7 +167,7 @@ export const validateCommitMessages = (
     return {
       ...commit,
       hasJiraKey: hasAnyJiraKey,
-      valid: hasCorrectJiraKey || isMergeCommit(message) || isRevertCommit(message),
+      valid: isDocCommit(commit) || hasCorrectJiraKey || isMergeCommit(message) || isRevertCommit(message),
     };
   });
 
@@ -175,6 +175,10 @@ export const validateCommitMessages = (
     valid: results.every((commitResult) => commitResult.valid),
     results,
   };
+};
+
+const isDocCommit = (commit: PullsListCommitsResponse[0]): boolean => {
+  return commit.commit.message.startsWith('docs:');
 };
 
 /** Validate PR title. */
