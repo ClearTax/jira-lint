@@ -177,7 +177,7 @@ export const validateCommitMessages = (
   };
 };
 
-const isDocCommit = (commit: PullsListCommitsResponse[0]): boolean => {
+export const isDocCommit = (commit: PullsListCommitsResponse[0]): boolean => {
   return commit.commit.message.startsWith('docs:');
 };
 

@@ -12,6 +12,7 @@ import {
   getNoIdComment,
   getPRDescription,
   getPRTitleComment,
+  isDocCommit,
   isHumongousPR,
   isNotBlank,
   shouldSkipBranchLint,
@@ -121,6 +122,23 @@ async function run(): Promise<void> {
       process.exit(0);
     }
 
+    // skip if only `docs:` commits
+    // Get commits for pull request
+    const prPayload = {
+      owner,
+      repo,
+      // eslint-disable-next-line @typescript-eslint/camelcase
+      pull_number: prNumber,
+    };
+    console.log('Fetching PR commits...');
+    const { data: commits } = await getCommits(client, prPayload);
+    console.log('Fetched PR commits');
+    console.log({ commits });
+    if (commits.every((c) => isDocCommit(c))) {
+      console.log('Skipping jira-lint - all commits start with "docs:"');
+      process.exit(0);
+    }
+
     const issueKey = getJIRAIssueKey(headBranch);
     if (!issueKey.length) {
       const comment: IssuesCreateCommentParams = {
@@ -193,22 +211,10 @@ async function run(): Promise<void> {
       }
 
       const validatePrCommits = async (): Promise<void> => {
-        // NOTE: 1. Get commits for pull request
-        const prPayload = {
-          owner,
-          repo,
-          // eslint-disable-next-line @typescript-eslint/camelcase
-          pull_number: prNumber,
-        };
-        console.log('Fetching PR commits...');
-        const { data: commits } = await getCommits(client, prPayload);
-        console.log('Fetched PR commits');
-        console.log({ commits });
-
-        // NOTE: 2. Validate commit messages against Jira issue key
+        // 1. Validate commit messages against Jira issue key
         const prCommitsValidationResults = validateCommitMessages(commits, issueKey);
 
-        // NOTE: 3. If there are invalid commit messages, post a comment to the PR and exit/fail
+        // 2. If there are invalid commit messages, post a comment to the PR and exit/fail
         if (!prCommitsValidationResults.valid) {
           const containsOtherJiraKeys = prCommitsValidationResults.results.some((r) => !r.valid && r.hasJiraKey);
           console.log(`Contains other jira keys in commits? "${containsOtherJiraKeys}"`);
