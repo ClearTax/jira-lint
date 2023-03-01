@@ -1,6 +1,6 @@
 {
   "name": "jira-lint",
-  "version": "2.2.0",
+  "version": "2.2.1",
   "description": "Add JIRA issue details to your GitHub pull request",
   "main": "lib/index.js",
   "scripts": {
