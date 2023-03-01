@@ -135,6 +135,11 @@ async function run(): Promise<void> {
     console.log('Fetched PR commits');
     console.log({ commits });
     if (commits.every((c) => isDocCommit(c))) {
+      const comment: IssuesCreateCommentParams = {
+        ...commonPayload,
+        body: '🙌 Thanks for taking time to update docs!! 👏',
+      };
+      await addComment(client, comment);
       console.log('Skipping jira-lint - all commits start with "docs:"');
       process.exit(0);
     }
