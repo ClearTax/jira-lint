@@ -35,7 +35,7 @@ inputs:
     default: "In Progress"
 
 runs:
-  using: 'node12'
+  using: 'node16'
   main: 'lib/index.js'
 branding:
   icon: 'check-square'
