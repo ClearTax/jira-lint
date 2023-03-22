@@ -121,6 +121,7 @@ export interface JIRALintActionInputs {
   PR_THRESHOLD: number;
   VALIDATE_ISSUE_STATUS: boolean;
   ALLOWED_ISSUE_STATUSES: string;
+  ISSUE_KEY_PREFIX: string;
 }
 
 export interface JIRAClient {

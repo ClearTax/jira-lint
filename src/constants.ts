@@ -16,11 +16,6 @@ export const BOT_BRANCH_PATTERNS: RegExp[] = [/^dependabot/, /^all-contributors/
 export const DEFAULT_BRANCH_PATTERNS: RegExp[] = [/^master$/, /^production$/, /^gh-pages$/];
 
 /**
- * Regex to match JIRA issue keys.
- */
-export const JIRA_REGEX_MATCHER = /\d+-(([A-Z0-9]{1,10})|[a-z0-9]{1,10})/g;
-
-/**
  * Default total maximum number of additions after which jira-lint will discourage the PR as it is
  * considered "too huge to review".
  */
