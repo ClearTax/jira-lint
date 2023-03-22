@@ -3,13 +3,7 @@ import * as core from '@actions/core';
 import * as github from '@actions/github';
 import similarity from 'string-similarity';
 import { IssuesAddLabelsParams, PullsUpdateParams, IssuesCreateCommentParams } from '@octokit/rest';
-import {
-  MARKER_REGEX,
-  BOT_BRANCH_PATTERNS,
-  DEFAULT_BRANCH_PATTERNS,
-  JIRA_REGEX_MATCHER,
-  HIDDEN_MARKER,
-} from './constants';
+import { MARKER_REGEX, BOT_BRANCH_PATTERNS, DEFAULT_BRANCH_PATTERNS, HIDDEN_MARKER } from './constants';
 import { JIRA, JIRADetails, JIRAClient } from './types';
 
 export const isBlank = (input: string): boolean => input.trim().length === 0;
@@ -19,7 +13,8 @@ export const isNotBlank = (input: string): boolean => !isBlank(input);
 export const reverseString = (input: string): string => input.split('').reverse().join('');
 
 /** Extract JIRA issue keys from a string. */
-export const getJIRAIssueKeys = (input: string): string[] => {
+export const getJIRAIssueKeys = (input: string, issueKeyPrefix: string): string[] => {
+  const JIRA_REGEX_MATCHER = new RegExp(`\\d+-${reverseString(issueKeyPrefix)}`, 'gi');
   const matches = reverseString(input).toUpperCase().match(JIRA_REGEX_MATCHER);
   if (matches?.length) {
     return matches.map(reverseString).reverse();
