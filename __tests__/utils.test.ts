@@ -25,6 +25,7 @@ describe('shouldSkipBranchLint()', () => {
   it('should recognize bot PRs', () => {
     expect(shouldSkipBranchLint('dependabot')).toBe(true);
     expect(shouldSkipBranchLint('dependabot/npm_and_yarn/types/react-dom-16.9.6')).toBe(true);
+    expect(shouldSkipBranchLint('uprev/1.25.0')).toBe(true);
     expect(shouldSkipBranchLint('feature/add-dependabot-config')).toBe(false);
     expect(shouldSkipBranchLint('feature/add-dependabot-config-OSS-101')).toBe(false);
 

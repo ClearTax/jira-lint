@@ -8,7 +8,7 @@ export const MARKER_REGEX = new RegExp(HIDDEN_MARKER);
 /**
  * Bot branch patters to avoid running jira-lint on.
  */
-export const BOT_BRANCH_PATTERNS: RegExp[] = [/^dependabot/, /^all-contributors/];
+export const BOT_BRANCH_PATTERNS: RegExp[] = [/^dependabot/, /^all-contributors/, /^uprev\//];
 
 /**
  * Default branch patterns to skip CI. Skip jira-lint when the HEAD ref matches one of these.
