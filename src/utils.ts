@@ -1,6 +1,6 @@
 import axios from 'axios';
 import * as core from '@actions/core';
-import similarity from 'string-similarity';
+import similarity from 'string-similarity-js';
 
 import {
   MARKER_REGEX,
@@ -226,7 +226,7 @@ Valid sample PR titles:
 
 /** Get a comment based on story title and PR title similarity. */
 export const getPRTitleComment = (storyTitle: string, prTitle: string): string => {
-  const matchRange: number = similarity.compareTwoStrings(storyTitle, prTitle);
+  const matchRange: number = similarity(storyTitle, prTitle);
   if (matchRange < 0.2) {
     return `<p>
     Knock Knock! 🔍
