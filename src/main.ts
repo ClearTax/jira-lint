@@ -1,6 +1,5 @@
 import * as core from '@actions/core';
 import * as github from '@actions/github';
-import { PullsUpdateParams, IssuesCreateCommentParams } from '@octokit/rest';
 
 import {
   addComment,
@@ -27,7 +26,13 @@ import {
   validatePrTitle,
   getNoIdPrTitleComment,
 } from './utils';
-import { PullRequestParams, JIRADetails, JIRALintActionInputs } from './types';
+import {
+  PullRequestParams,
+  JIRADetails,
+  JIRALintActionInputs,
+  CreateCommentParameters,
+  UpdatePullRequestParameters
+} from './types';
 import { DEFAULT_PR_ADDITIONS_THRESHOLD } from './constants';
 
 const getInputs = (): JIRALintActionInputs => {
@@ -101,11 +106,11 @@ async function run(): Promise<void> {
     };
 
     // github client with given token
-    const client: github.GitHub = new github.GitHub(GITHUB_TOKEN);
+    const client = github.getOctokit(GITHUB_TOKEN, );
 
     if (!headBranch && !baseBranch) {
       const commentBody = 'jira-lint is unable to determine the head and base branch';
-      const comment: IssuesCreateCommentParams = {
+      const comment: CreateCommentParameters = {
         ...commonPayload,
         body: commentBody,
       };
@@ -131,11 +136,11 @@ async function run(): Promise<void> {
       pull_number: prNumber,
     };
     console.log('Fetching PR commits...');
-    const { data: commits } = await getCommits(client, prPayload);
+    const commits = await getCommits(client, prPayload);
     console.log('Fetched PR commits');
     console.log({ commits });
     if (commits.every((c) => isDocCommit(c))) {
-      const comment: IssuesCreateCommentParams = {
+      const comment: CreateCommentParameters = {
         ...commonPayload,
         body: '🙌 Thanks for taking time to update docs!! 👏',
       };
@@ -146,7 +151,7 @@ async function run(): Promise<void> {
 
     const issueKey = getJIRAIssueKey(headBranch);
     if (!issueKey.length) {
-      const comment: IssuesCreateCommentParams = {
+      const comment: CreateCommentParameters = {
         ...commonPayload,
         body: getNoIdComment(headBranch),
       };
@@ -173,7 +178,7 @@ async function run(): Promise<void> {
       });
 
       if (!isIssueStatusValid(VALIDATE_ISSUE_STATUS, ALLOWED_ISSUE_STATUSES.split(','), details)) {
-        const invalidIssueStatusComment: IssuesCreateCommentParams = {
+        const invalidIssueStatusComment: CreateCommentParameters = {
           ...commonPayload,
           body: getInvalidIssueStatusComment(details.status, ALLOWED_ISSUE_STATUSES),
         };
@@ -185,7 +190,7 @@ async function run(): Promise<void> {
       }
 
       if (shouldUpdatePRDescription(prBody)) {
-        const prData: PullsUpdateParams = {
+        const prData: UpdatePullRequestParameters = {
           owner,
           repo,
           // eslint-disable-next-line @typescript-eslint/camelcase
@@ -196,7 +201,7 @@ async function run(): Promise<void> {
 
         // add comment for PR title
         if (!SKIP_COMMENTS) {
-          const prTitleComment: IssuesCreateCommentParams = {
+          const prTitleComment: CreateCommentParameters = {
             ...commonPayload,
             body: getPRTitleComment(details.summary, title),
           };
@@ -205,7 +210,7 @@ async function run(): Promise<void> {
 
           // add a comment if the PR is huge
           if (isHumongousPR(additions, prThreshold)) {
-            const hugePrComment: IssuesCreateCommentParams = {
+            const hugePrComment: CreateCommentParameters = {
               ...commonPayload,
               body: getHugePrComment(additions, prThreshold),
             };
@@ -264,7 +269,7 @@ async function run(): Promise<void> {
       };
       await validatePullRequestTitle();
     } else {
-      const comment: IssuesCreateCommentParams = {
+      const comment: CreateCommentParameters = {
         ...commonPayload,
         body: getNoIdComment(headBranch),
       };
@@ -274,8 +279,11 @@ async function run(): Promise<void> {
       process.exit(1);
     }
   } catch (error) {
+    if (error instanceof Error) {
+      core.setFailed(error.message);
+    }
+    core.setFailed("Unknown error");
     console.log({ error });
-    core.setFailed(error.message);
     process.exit(1);
   }
 }

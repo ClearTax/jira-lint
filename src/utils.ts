@@ -1,15 +1,7 @@
 import axios from 'axios';
 import * as core from '@actions/core';
-import * as github from '@actions/github';
 import similarity from 'string-similarity';
-import {
-  IssuesAddLabelsParams,
-  PullsUpdateParams,
-  IssuesCreateCommentParams,
-  PullsListCommitsParams,
-  PullsListCommitsResponse,
-  Response,
-} from '@octokit/rest';
+
 import {
   MARKER_REGEX,
   BOT_BRANCH_PATTERNS,
@@ -18,7 +10,19 @@ import {
   JIRA_COMMIT_REGEX_MATCHER,
   HIDDEN_MARKER,
 } from './constants';
-import { JIRA, JIRADetails, JIRAClient, ValidateCommitMessagesResponse } from './types';
+import {
+  JIRA,
+  JIRADetails,
+  JIRAClient,
+  ValidateCommitMessagesResponse,
+  ValidateCommitMessagesResponseItem,
+  ListCommitsResponseData,
+  AddLabelParameters,
+  UpdatePullRequestParameters,
+  CreateCommentParameters,
+  ListCommitsParameters,
+} from './types';
+import {GitHub} from "@actions/github/lib/utils";
 
 export const isBlank = (input: string): boolean => input.trim().length === 0;
 export const isNotBlank = (input: string): boolean => !isBlank(input);
@@ -111,50 +115,65 @@ export const getJIRAClient = (baseURL: string, token: string): JIRAClient => {
 };
 
 /** Add the specified label to the PR. */
-export const addLabels = async (client: github.GitHub, labelData: IssuesAddLabelsParams): Promise<void> => {
+export const addLabels = async (client: InstanceType<typeof GitHub>, labelData: AddLabelParameters): Promise<void> => {
   try {
-    await client.issues.addLabels(labelData);
+    await client.rest.issues.addLabels(labelData);
   } catch (error) {
-    core.setFailed(error.message);
+    if (error instanceof Error) {
+      core.setFailed(error.message);
+    }
+    core.setFailed("Unknown error");
     process.exit(1);
   }
 };
 
 /** Update a PR details. */
-export const updatePrDetails = async (client: github.GitHub, prData: PullsUpdateParams): Promise<void> => {
+export const updatePrDetails = async (client: InstanceType<typeof GitHub>, prData: UpdatePullRequestParameters): Promise<void> => {
   try {
-    await client.pulls.update(prData);
-  } catch (error) {
-    core.setFailed(error.message);
+    await client.rest.pulls.update(prData);
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      core.setFailed(error.message);
+    }
+    core.setFailed("Unknown error");
     process.exit(1);
   }
 };
 
 /** Add a comment to a PR. */
-export const addComment = async (client: github.GitHub, comment: IssuesCreateCommentParams): Promise<void> => {
+export const addComment = async (client: InstanceType<typeof GitHub>, comment: CreateCommentParameters): Promise<void> => {
   try {
-    await client.issues.createComment(comment);
+    await client.rest.issues.createComment(comment)
+    //await client.issues.createComment(comment);
   } catch (error) {
-    core.setFailed(error.message);
+    if (error instanceof Error) {
+      core.setFailed(error.message);
+    }
+    core.setFailed("Unknown error");
+    process.exit(1);
   }
 };
 
 /** Get commit messages from a PR. */
 export const getCommits = async (
-  client: github.GitHub,
-  payload: PullsListCommitsParams
-): Promise<Response<PullsListCommitsResponse>> => {
+  client: InstanceType<typeof GitHub>,
+  payload: ListCommitsParameters
+): Promise<ListCommitsResponseData> => {
   try {
-    return await client.pulls.listCommits(payload);
+    const commits = await client.rest.pulls.listCommits(payload);
+    return commits.data
   } catch (error) {
-    core.setFailed(error.message);
+    if (error instanceof Error) {
+      core.setFailed(error.message);
+    }
+    core.setFailed("Unknown error");
     process.exit(1);
   }
 };
 
 /** Validate commit messages. */
 export const validateCommitMessages = (
-  commits: PullsListCommitsResponse,
+  commits: ListCommitsResponseData,
   jiraIssueKey: string
 ): ValidateCommitMessagesResponse => {
   const isMergeCommit = (message: string): boolean => /^Merge (branch|pull request)/i.test(message);
@@ -164,11 +183,13 @@ export const validateCommitMessages = (
     const hasCorrectJiraKey = message.match(new RegExp(`\njira: ${jiraIssueKey}`)) !== null;
     const hasAnyJiraKey = message.match(JIRA_COMMIT_REGEX_MATCHER) !== null;
 
-    return {
+    const validatedCommitMessage: ValidateCommitMessagesResponseItem = {
       ...commit,
       hasJiraKey: hasAnyJiraKey,
       valid: isDocCommit(commit) || hasCorrectJiraKey || isMergeCommit(message) || isRevertCommit(message),
-    };
+    }
+
+    return validatedCommitMessage
   });
 
   return {
@@ -177,7 +198,7 @@ export const validateCommitMessages = (
   };
 };
 
-export const isDocCommit = (commit: PullsListCommitsResponse[0]): boolean => {
+export const isDocCommit = (commit: ListCommitsResponseData[0]): boolean => {
   return commit.commit.message.startsWith('docs:');
 };
 
