@@ -13,7 +13,7 @@ jobs:
     - uses: actions/setup-node@v4
       name: setup node
       with:
-        node-version: '20.11'
+        node-version-file: 'package.json'
 
     - name: "install"
       run: npm ci
@@ -42,4 +42,3 @@ jobs:
 
     - name: "test"
       run: npm run test
-
