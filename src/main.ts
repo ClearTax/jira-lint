@@ -101,7 +101,6 @@ async function run(): Promise<void> {
     const commonPayload = {
       owner,
       repo,
-      // eslint-disable-next-line @typescript-eslint/camelcase
       issue_number: prNumber,
     };
 
@@ -132,7 +131,6 @@ async function run(): Promise<void> {
     const prPayload = {
       owner,
       repo,
-      // eslint-disable-next-line @typescript-eslint/camelcase
       pull_number: prNumber,
     };
     console.log('Fetching PR commits...');
@@ -193,7 +191,6 @@ async function run(): Promise<void> {
         const prData: UpdatePullRequestParameters = {
           owner,
           repo,
-          // eslint-disable-next-line @typescript-eslint/camelcase
           pull_number: prNumber,
           body: getPRDescription(prBody, details),
         };

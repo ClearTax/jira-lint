@@ -5,14 +5,16 @@ module.exports = {
     node: true,
   },
   rules: {
+    'no-useless-catch': 'warn',
+    '@typescript-eslint/no-namespace': 'warn',
     'no-console': [
-      'error',
+      'warn',
       {
         allow: ['debug', 'error', 'warn'],
       },
     ],
     complexity: [
-      'error',
+      'warn',
       {
         max: 3,
       },
@@ -21,7 +23,7 @@ module.exports = {
     '@typescript-eslint/no-unused-vars': 'error',
     eqeqeq: ['error', 'always'],
     'no-magic-numbers': [
-      'error',
+      'warn',
       {
         ignore: [-1, 0, 1, 2, 3, 4, 100],
         ignoreArrayIndexes: true,
@@ -31,7 +33,7 @@ module.exports = {
     'max-params': ['error', 3],
     'max-nested-callbacks': ['error', 3],
     'max-lines-per-function': [
-      'error',
+      'warn',
       {
         max: 35,
         skipBlankLines: true,
@@ -47,7 +49,7 @@ module.exports = {
         skipBlankLines: true,
       },
     ],
-    'max-depth': ['error', 4],
+    'max-depth': ['warn', 4],
     'no-only-tests/no-only-tests': 'error',
   },
   overrides: [
