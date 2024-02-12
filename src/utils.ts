@@ -22,7 +22,7 @@ import {
   CreateCommentParameters,
   ListCommitsParameters,
 } from './types';
-import {GitHub} from "@actions/github/lib/utils";
+import { GitHub } from '@actions/github/lib/utils';
 
 export const isBlank = (input: string): boolean => input.trim().length === 0;
 export const isNotBlank = (input: string): boolean => !isBlank(input);
@@ -122,34 +122,40 @@ export const addLabels = async (client: InstanceType<typeof GitHub>, labelData: 
     if (error instanceof Error) {
       core.setFailed(error.message);
     }
-    core.setFailed("Unknown error");
+    core.setFailed('Unknown error');
     process.exit(1);
   }
 };
 
 /** Update a PR details. */
-export const updatePrDetails = async (client: InstanceType<typeof GitHub>, prData: UpdatePullRequestParameters): Promise<void> => {
+export const updatePrDetails = async (
+  client: InstanceType<typeof GitHub>,
+  prData: UpdatePullRequestParameters
+): Promise<void> => {
   try {
     await client.rest.pulls.update(prData);
   } catch (error: unknown) {
     if (error instanceof Error) {
       core.setFailed(error.message);
     }
-    core.setFailed("Unknown error");
+    core.setFailed('Unknown error');
     process.exit(1);
   }
 };
 
 /** Add a comment to a PR. */
-export const addComment = async (client: InstanceType<typeof GitHub>, comment: CreateCommentParameters): Promise<void> => {
+export const addComment = async (
+  client: InstanceType<typeof GitHub>,
+  comment: CreateCommentParameters
+): Promise<void> => {
   try {
-    await client.rest.issues.createComment(comment)
+    await client.rest.issues.createComment(comment);
     //await client.issues.createComment(comment);
   } catch (error) {
     if (error instanceof Error) {
       core.setFailed(error.message);
     }
-    core.setFailed("Unknown error");
+    core.setFailed('Unknown error');
     process.exit(1);
   }
 };
@@ -161,12 +167,12 @@ export const getCommits = async (
 ): Promise<ListCommitsResponseData> => {
   try {
     const commits = await client.rest.pulls.listCommits(payload);
-    return commits.data
+    return commits.data;
   } catch (error) {
     if (error instanceof Error) {
       core.setFailed(error.message);
     }
-    core.setFailed("Unknown error");
+    core.setFailed('Unknown error');
     process.exit(1);
   }
 };
@@ -187,9 +193,9 @@ export const validateCommitMessages = (
       ...commit,
       hasJiraKey: hasAnyJiraKey,
       valid: isDocCommit(commit) || hasCorrectJiraKey || isMergeCommit(message) || isRevertCommit(message),
-    }
+    };
 
-    return validatedCommitMessage
+    return validatedCommitMessage;
   });
 
   return {

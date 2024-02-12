@@ -31,7 +31,7 @@ import {
   JIRADetails,
   JIRALintActionInputs,
   CreateCommentParameters,
-  UpdatePullRequestParameters
+  UpdatePullRequestParameters,
 } from './types';
 import { DEFAULT_PR_ADDITIONS_THRESHOLD } from './constants';
 
@@ -106,7 +106,7 @@ async function run(): Promise<void> {
     };
 
     // github client with given token
-    const client = github.getOctokit(GITHUB_TOKEN, );
+    const client = github.getOctokit(GITHUB_TOKEN);
 
     if (!headBranch && !baseBranch) {
       const commentBody = 'jira-lint is unable to determine the head and base branch';
@@ -282,7 +282,7 @@ async function run(): Promise<void> {
     if (error instanceof Error) {
       core.setFailed(error.message);
     }
-    core.setFailed("Unknown error");
+    core.setFailed('Unknown error');
     console.log({ error });
     process.exit(1);
   }

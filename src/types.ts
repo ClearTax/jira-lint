@@ -1,5 +1,5 @@
 import { AxiosInstance } from 'axios';
-import {Endpoints, RequestParameters} from '@octokit/types'
+import { Endpoints, RequestParameters } from '@octokit/types';
 
 export interface PullRequestParams {
   number: number;
@@ -110,8 +110,10 @@ export interface JIRAClient {
   getTicketDetails: (key: string) => Promise<JIRADetails>;
 }
 
-export type ListCommitsResponseData = Endpoints["GET /repos/{owner}/{repo}/pulls/{pull_number}/commits"]["response"]["data"];
-export type ListCommitsResponseDataCommit = Endpoints["GET /repos/{owner}/{repo}/pulls/{pull_number}/commits"]["response"]["data"][0];
+export type ListCommitsResponseData =
+  Endpoints['GET /repos/{owner}/{repo}/pulls/{pull_number}/commits']['response']['data'];
+export type ListCommitsResponseDataCommit =
+  Endpoints['GET /repos/{owner}/{repo}/pulls/{pull_number}/commits']['response']['data'][0];
 export interface ValidateCommitMessagesResponseItem extends ListCommitsResponseDataCommit {
   hasJiraKey: boolean;
   valid: boolean;
@@ -122,7 +124,11 @@ export interface ValidateCommitMessagesResponse {
   results: ValidateCommitMessagesResponseItem[];
 }
 
-export type AddLabelParameters = RequestParameters & Endpoints["POST /repos/{owner}/{repo}/issues/{issue_number}/labels"]["parameters"]
-export type UpdatePullRequestParameters = RequestParameters & Endpoints["PATCH /repos/{owner}/{repo}/pulls/{pull_number}"]["parameters"]
-export type CreateCommentParameters = RequestParameters & Endpoints["POST /repos/{owner}/{repo}/issues/{issue_number}/comments"]["parameters"];
-export type ListCommitsParameters = RequestParameters & Endpoints["GET /repos/{owner}/{repo}/pulls/{pull_number}/commits"]["parameters"];
+export type AddLabelParameters = RequestParameters &
+  Endpoints['POST /repos/{owner}/{repo}/issues/{issue_number}/labels']['parameters'];
+export type UpdatePullRequestParameters = RequestParameters &
+  Endpoints['PATCH /repos/{owner}/{repo}/pulls/{pull_number}']['parameters'];
+export type CreateCommentParameters = RequestParameters &
+  Endpoints['POST /repos/{owner}/{repo}/issues/{issue_number}/comments']['parameters'];
+export type ListCommitsParameters = RequestParameters &
+  Endpoints['GET /repos/{owner}/{repo}/pulls/{pull_number}/commits']['parameters'];
