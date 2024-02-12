@@ -1,5 +1,5 @@
 import { AxiosInstance } from 'axios';
-import { PullsListCommitsResponseItem } from '@octokit/rest';
+import { Endpoints, RequestParameters } from '@octokit/types';
 
 export interface PullRequestParams {
   number: number;
@@ -15,28 +15,6 @@ export interface PullRequestParams {
   additions?: number;
   title?: string;
   [key: string]: unknown;
-}
-
-export enum StoryType {
-  Feature = 'feature',
-  Bug = 'bug',
-  Chore = 'chore',
-  Release = 'release',
-}
-
-export interface Label {
-  name: string;
-}
-
-export const enum StoryState {
-  Accepted = 'accepted',
-  Delivered = 'delivered',
-  Finished = 'finished',
-  Planned = 'planned',
-  Rejected = 'rejected',
-  Started = 'started',
-  Unscheduled = 'unscheduled',
-  Unstarted = 'unstarted',
 }
 
 export namespace JIRA {
@@ -132,7 +110,11 @@ export interface JIRAClient {
   getTicketDetails: (key: string) => Promise<JIRADetails>;
 }
 
-interface ValidateCommitMessagesResponseItem extends PullsListCommitsResponseItem {
+export type ListCommitsResponseData =
+  Endpoints['GET /repos/{owner}/{repo}/pulls/{pull_number}/commits']['response']['data'];
+export type ListCommitsResponseDataCommit =
+  Endpoints['GET /repos/{owner}/{repo}/pulls/{pull_number}/commits']['response']['data'][0];
+export interface ValidateCommitMessagesResponseItem extends ListCommitsResponseDataCommit {
   hasJiraKey: boolean;
   valid: boolean;
 }
@@ -141,3 +123,12 @@ export interface ValidateCommitMessagesResponse {
   valid: boolean;
   results: ValidateCommitMessagesResponseItem[];
 }
+
+export type AddLabelParameters = RequestParameters &
+  Endpoints['POST /repos/{owner}/{repo}/issues/{issue_number}/labels']['parameters'];
+export type UpdatePullRequestParameters = RequestParameters &
+  Endpoints['PATCH /repos/{owner}/{repo}/pulls/{pull_number}']['parameters'];
+export type CreateCommentParameters = RequestParameters &
+  Endpoints['POST /repos/{owner}/{repo}/issues/{issue_number}/comments']['parameters'];
+export type ListCommitsParameters = RequestParameters &
+  Endpoints['GET /repos/{owner}/{repo}/pulls/{pull_number}/commits']['parameters'];

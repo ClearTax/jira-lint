@@ -15,9 +15,9 @@ import {
   validateCommitMessages,
   validatePrTitle,
 } from '../src/utils';
-import { PullsListCommitsResponse } from '@octokit/rest';
+
 import { HIDDEN_MARKER } from '../src/constants';
-import { JIRADetails } from '../src/types';
+import {JIRADetails, ListCommitsResponseData} from '../src/types';
 
 jest.spyOn(console, 'log').mockImplementation(); // avoid actual console.log in test output
 
@@ -140,7 +140,7 @@ describe('validateCommitMessages', () => {
     ${'ENG-118'} | ${createConvCmtMsg('Single newline; wrong jira key\n', 'ENG-117')}        | ${false} | ${true}
     ${'ENG-118'} | ${createConvCmtMsg('Two newlines; wrong jira key\n', 'ENG-117')}          | ${false} | ${true}
   `('should validate commit message "$commitMessage"', ({ jiraKey, commitMessage, isValid, hasJiraKey }) => {
-    const commits = [createFakeCommit(commitMessage)] as PullsListCommitsResponse;
+    const commits = [createFakeCommit(commitMessage)] as ListCommitsResponseData;
 
     const result = validateCommitMessages(commits, jiraKey);
 
@@ -223,10 +223,9 @@ describe('getPRDescription()', () => {
       status: 'In Progress',
     };
     const description = getPRDescription('some_body', issue);
-
     expect(shouldUpdatePRDescription(description)).toBeFalsy();
     expect(description).toContain(issue.key);
-    expect(description).toContain(issue.estimate);
+    expect(description).toContain(`${issue.estimate}`);
     expect(description).toContain(issue.status);
     expect(description).toContain(issue.labels[0].name);
   });
@@ -254,8 +253,8 @@ describe('getNoIdComment()', () => {
 
 describe('getHugePrComment()', () => {
   it('should return the comment content with additions and threshold', () => {
-    expect(getHugePrComment(1000, 800)).toContain(1000);
-    expect(getHugePrComment(1000, 800)).toContain(800);
+    expect(getHugePrComment(1000, 800)).toContain('1000');
+    expect(getHugePrComment(1000, 800)).toContain('800');
   });
 });
 
