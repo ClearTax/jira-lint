@@ -1,11 +1,11 @@
 {
   "name": "jira-lint",
-  "version": "2.3.1",
+  "version": "2.4.0",
   "description": "Add JIRA issue details to your GitHub pull request",
   "main": "lib/index.js",
   "scripts": {
     "prebuild": "engines-ok && rm -rf lib",
-    "build": "ncc build src/main.ts -o lib -m",
+    "build": "esbuild src/main.ts --bundle --platform=node --target=node20.11 --outfile=lib/index.js",
     "test": "jest",
     "test:watch": "jest --watch",
     "lint": "prettier --check src/**/*.ts && eslint src/**/*.ts",
@@ -16,8 +16,8 @@
     "url": "git+https://github.com/cleartax/jira-lint"
   },
   "engines": {
-    "node": ">= 13",
-    "npm": ">= 6"
+    "node": ">= 20",
+    "npm": ">= 10"
   },
   "keywords": [
     "actions",
@@ -46,20 +46,23 @@
     "@types/jest": "^29.5.12",
     "@types/lodash": "^4.14.202",
     "@types/node": "^20.11.17",
-    "@zeit/ncc": "^0.22.3",
     "axios": "^1.6.7",
     "engines-ok": "^1.2.0",
+    "esbuild": "0.20.0",
+    "eslint": "^8.56.0",
     "eslint-plugin-github": "^4.10.1",
     "eslint-plugin-jest": "^27.6.3",
-    "eslint": "^8.56.0",
     "husky": "^9.0.10",
-    "jest-circus": "^29.7.0",
     "jest": "^29.7.0",
+    "jest-circus": "^29.7.0",
     "lint-staged": "^15.2.2",
     "lodash": "^4.17.21",
     "markdown-toc": "^1.2.0",
     "prettier": "^3.2.5",
     "ts-jest": "^29.1.2",
     "typescript": "^5.3.3"
+  },
+  "volta": {
+    "node": "20.11.0"
   }
 }
