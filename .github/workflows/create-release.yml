@@ -3,7 +3,7 @@ name: Create release
 on:
   push:
     branches:
-      - main
+      - master
 
 jobs:
   create_release:
