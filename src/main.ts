@@ -279,7 +279,7 @@ async function run(): Promise<void> {
     if (error instanceof Error) {
       core.setFailed(error.message);
     }
-    core.setFailed('Unknown error');
+    core.setFailed(`Unknown error: ${error}`);
     console.log({ error });
     process.exit(1);
   }

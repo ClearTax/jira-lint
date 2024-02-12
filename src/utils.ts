@@ -122,7 +122,7 @@ export const addLabels = async (client: InstanceType<typeof GitHub>, labelData: 
     if (error instanceof Error) {
       core.setFailed(error.message);
     }
-    core.setFailed('Unknown error');
+    core.setFailed(`Unknown error: ${error}`);
     process.exit(1);
   }
 };
@@ -138,7 +138,7 @@ export const updatePrDetails = async (
     if (error instanceof Error) {
       core.setFailed(error.message);
     }
-    core.setFailed('Unknown error');
+    core.setFailed(`Unknown error: ${error}`);
     process.exit(1);
   }
 };
@@ -150,12 +150,11 @@ export const addComment = async (
 ): Promise<void> => {
   try {
     await client.rest.issues.createComment(comment);
-    //await client.issues.createComment(comment);
   } catch (error) {
     if (error instanceof Error) {
       core.setFailed(error.message);
     }
-    core.setFailed('Unknown error');
+    core.setFailed(`Unknown error: ${error}`);
     process.exit(1);
   }
 };
@@ -172,7 +171,7 @@ export const getCommits = async (
     if (error instanceof Error) {
       core.setFailed(error.message);
     }
-    core.setFailed('Unknown error');
+    core.setFailed(`Unknown error: ${error}`);
     process.exit(1);
   }
 };
