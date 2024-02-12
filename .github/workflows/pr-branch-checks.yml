@@ -7,13 +7,13 @@ on: # rebuild any PRs and main branch changes (mirror few typescript-action conv
       - 'releases/*'
 jobs:
   build-test:
-    runs-on: ubuntu-16.04
+    runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
-    - uses: actions/setup-node@v1
+    - uses: actions/checkout@v4
+    - uses: actions/setup-node@v4
       name: setup node
       with:
-        node-version: '13.x'
+        node-version: '20.11'
 
     - name: "install"
       run: npm ci
@@ -34,7 +34,7 @@ jobs:
             && exit 1)
 
     - name: "archive lib when diff"
-      uses: actions/upload-artifact@v1
+      uses: actions/upload-artifact@v4
       if: failure()
       with:
         name: ci-built-lib
