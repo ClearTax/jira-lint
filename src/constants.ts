@@ -1,6 +1,13 @@
 /** Hidden marker to add to PR description. */
 export const HIDDEN_MARKER = 'added_by_jira_lint';
 
+export const JIRA_BASE_URL = 'https://invitationhomes.atlassian.net';
+
+export const LABELS = {
+  HOTFIX_PRE_PROD: 'HOTFIX-PRE-PROD',
+  HOTFIX_PROD: 'HOTFIX-PROD',
+};
+
 /** Regex to check for the hidden marker in PR description to avoid adding jira-lint PR details
  * multiple times. */
 export const MARKER_REGEX = new RegExp(HIDDEN_MARKER);

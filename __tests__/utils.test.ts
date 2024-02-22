@@ -1,23 +1,21 @@
 import {
   getHotfixLabel,
   getHugePrComment,
-  getJIRAIssueKey,
   getLabelsForDisplay,
   getNoIdComment,
-  getPRDescription,
   isHumongousPR,
   LABELS,
   shouldSkipBranchLint,
   shouldUpdatePRDescription,
-  getJIRAClient,
   getInvalidIssueStatusComment,
   isIssueStatusValid,
   validateCommitMessages,
-  validatePrTitle,
-} from '../src/utils';
+  validatePrTitle, getPRDescription,
+} from '../src/github';
 
 import { HIDDEN_MARKER } from '../src/constants';
 import {JIRADetails, ListCommitsResponseData} from '../src/types';
+import {getJIRAClient, getJIRAIssueKey} from "../src/jira";
 
 jest.spyOn(console, 'log').mockImplementation(); // avoid actual console.log in test output
 
@@ -88,9 +86,9 @@ describe('getHotFixLabel()', () => {
 describe('getJIRAIssueKey()', () => {
   it('gets the keys from a string', () => {
     expect(
-      getJIRAIssueKey(
-        'BF-18-my-feature-abc-123-X-88-ABCDEFGHIJKL-999-abc-XY-Z-333-abcDEF-33-ABCDEF-33_abcdef-33_ABC-1_PB2-1_pb2-1_P2P-1_p2p-1'
-      )
+        getJIRAIssueKey(
+            'BF-18-my-feature-abc-123-X-88-ABCDEFGHIJKL-999-abc-XY-Z-333-abcDEF-33-ABCDEF-33_abcdef-33_ABC-1_PB2-1_pb2-1_P2P-1_p2p-1'
+        )
     ).toEqual('BF-18');
     expect(getJIRAIssueKey('ASAP2-123-my-feature')).toEqual('ASAP2-123');
   });
@@ -164,7 +162,7 @@ describe('shouldUpdatePRDescription()', () => {
   it('should return false when the hidden marker is present', () => {
     expect(shouldUpdatePRDescription(HIDDEN_MARKER)).toBeFalsy();
     expect(
-      shouldUpdatePRDescription(`
+        shouldUpdatePRDescription(`
 <details open>
   <summary> <strong>ESCH-10</strong></summary>
   <br />
@@ -198,7 +196,7 @@ some actual content'
     expect(shouldUpdatePRDescription('added_by')).toBeTruthy();
     expect(shouldUpdatePRDescription('added_by_something_else')).toBeTruthy();
     expect(
-      shouldUpdatePRDescription(`
+        shouldUpdatePRDescription(`
 ## Checklist
 
 - [ ] PR is up-to-date with a description of changes and screenshots (if applicable).
@@ -207,6 +205,14 @@ some actual content'
 - [ ] Tested locally for regressions & all test cases are passing.
 `)
     ).toBeTruthy();
+  });
+
+  it('should return true when the pull request body is undefined', () => {
+    expect(shouldUpdatePRDescription(undefined)).toBe(true);
+  });
+
+  it('should return true when the pull request body is null', () => {
+    expect(shouldUpdatePRDescription(null as unknown as string)).toBe(true);
   });
 });
 
@@ -222,12 +228,32 @@ describe('getPRDescription()', () => {
       project: { name: 'project', url: 'project-url', key: 'abc' },
       status: 'In Progress',
     };
-    const description = getPRDescription('some_body', issue);
+    const description = getPRDescription(issue, 'some_body');
     expect(shouldUpdatePRDescription(description)).toBeFalsy();
     expect(description).toContain(issue.key);
     expect(description).toContain(`${issue.estimate}`);
     expect(description).toContain(issue.status);
     expect(description).toContain(issue.labels[0].name);
+    expect(description).toContain('---');
+    expect(description).toContain('some_body');
+  });
+
+  it('should include the jira details when the pull request body is undefined', () => {
+    const issue: JIRADetails = {
+      key: 'ABC-123',
+      url: 'url',
+      type: { name: 'feature', icon: 'feature-icon-url' },
+      estimate: 1,
+      labels: [{ name: 'frontend', url: 'frontend-url' }],
+      summary: 'Story title or summary',
+      project: { name: 'project', url: 'project-url', key: 'abc' },
+      status: 'In Progress',
+    };
+
+    const description = getPRDescription(issue);
+
+    expect(description).toContain(issue.key);
+    expect(description).not.toContain('---');
   });
 });
 
@@ -261,10 +287,10 @@ describe('getHugePrComment()', () => {
 describe('getLabelsForDisplay()', () => {
   it('generates label markup without spaces', () => {
     expect(
-      getLabelsForDisplay([
-        { name: 'one', url: 'url-one' },
-        { name: 'two', url: 'url-two' },
-      ])
+        getLabelsForDisplay([
+          { name: 'one', url: 'url-one' },
+          { name: 'two', url: 'url-two' },
+        ])
     ).toBe(`<a href="url-one" title="one">one</a>, <a href="url-two" title="two">two</a>`);
   });
 });
@@ -272,7 +298,7 @@ describe('getLabelsForDisplay()', () => {
 describe('JIRA Client', () => {
   // use this to test if the token is correct
   it.skip('should be able to access the issue', async () => {
-    const client = getJIRAClient('https://cleartaxtech.atlassian.net/', '<token_here>');
+    const client = getJIRAClient('<token_here>');
     const details = await client.getTicketDetails('ES-10');
     console.log({ details });
     expect(details).not.toBeNull();
