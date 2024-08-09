@@ -1,6 +1,6 @@
 module.exports = {
   plugins: ['jest', '@typescript-eslint'],
-  extends: ['plugin:github/es6'],
+  extends: ['plugin:github'],
   parser: '@typescript-eslint/parser',
   parserOptions: {
     ecmaVersion: 9,
