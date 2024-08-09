@@ -40,6 +40,7 @@
   "dependencies": {
     "@actions/core": "^1.2.6",
     "@actions/github": "^1.1.0",
+    "eslint-plugin-github": "^5.0.1",
     "string-similarity": "^4.0.1"
   },
   "devDependencies": {
