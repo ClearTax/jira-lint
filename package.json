@@ -16,8 +16,8 @@
     "url": "git+https://github.com/cleartax/jira-lint"
   },
   "engines": {
-    "node": ">= 15",
-    "npm": ">=7"
+    "node": ">= 17",
+    "npm": ">=8"
   },
   "keywords": [
     "actions",
