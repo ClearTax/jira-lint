@@ -13,7 +13,7 @@ jobs:
     - uses: actions/setup-node@v1
       name: setup node
       with:
-        node-version: '17.x'
+        node-version: '18.x'
 
     - name: "install"
       run: npm ci
