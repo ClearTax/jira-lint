@@ -1,4 +1,4 @@
-module.exports = {
+const config = {
   printWidth: 120,
   semi: true,
   singleQuote: true,
@@ -9,3 +9,4 @@ module.exports = {
   bracketSpacing: true,
   endOfLine: 'lf',
 };
+export default config;

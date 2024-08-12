@@ -1,4 +1,4 @@
-module.exports = {
+module.exports =  {
   plugins: ['jest', '@typescript-eslint', "github"],
   extends: ['plugin:github/recommended'],
   parser: '@typescript-eslint/parser',
@@ -46,6 +46,8 @@ module.exports = {
     'jsdoc/require-returns': 'off',
     'jsdoc/check-examples': 'off',
     'i18n-text/no-en': 'off',
+    'import/no-unresolved': 'off',
+    'import/named': 'off'
   },
   env: {
     'node': true,
