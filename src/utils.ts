@@ -1,16 +1,15 @@
 import axios from 'axios';
 import * as core from '@actions/core';
-import * as github from '@actions/github';
 import similarity from 'string-similarity';
-import { IssuesAddLabelsParams, PullsUpdateParams, IssuesCreateCommentParams } from '@octokit/rest';
+import { Octokit, RestEndpointMethodTypes } from '@octokit/action';
 import {
   MARKER_REGEX,
   BOT_BRANCH_PATTERNS,
   DEFAULT_BRANCH_PATTERNS,
   JIRA_REGEX_MATCHER,
   HIDDEN_MARKER,
-} from './constants';
-import { JIRA, JIRADetails, JIRAClient } from './types';
+} from './constants.js';
+import { JIRA, JIRADetails, JIRAClient } from './types.js';
 
 export const isBlank = (input: string): boolean => input.trim().length === 0;
 export const isNotBlank = (input: string): boolean => !isBlank(input);
@@ -107,31 +106,50 @@ export const getJIRAClient = (baseURL: string, token: string): JIRAClient => {
 };
 
 /** Add the specified label to the PR. */
-export const addLabels = async (client: github.GitHub, labelData: IssuesAddLabelsParams): Promise<void> => {
+export const addLabels = async (
+  client: Octokit,
+  labelData: RestEndpointMethodTypes['issues']['addLabels']['parameters']
+): Promise<void> => {
   try {
     await client.issues.addLabels(labelData);
   } catch (error) {
-    core.setFailed(error.message);
-    process.exit(1);
+    if (error instanceof Error && error?.message) {
+      core.setFailed(error.message);
+      process.exit(1);
+    } else {
+      throw error;
+    }
   }
 };
 
 /** Update a PR details. */
-export const updatePrDetails = async (client: github.GitHub, prData: PullsUpdateParams): Promise<void> => {
+export const updatePrDetails = async (
+  client: Octokit,
+  prData: RestEndpointMethodTypes['pulls']['update']['parameters']
+): Promise<void> => {
   try {
     await client.pulls.update(prData);
   } catch (error) {
-    core.setFailed(error.message);
-    process.exit(1);
+    if (error instanceof Error && error?.message) {
+      core.setFailed(error.message);
+      process.exit(1);
+    } else {
+      throw error;
+    }
   }
 };
 
 /** Add a comment to a PR. */
-export const addComment = async (client: github.GitHub, comment: IssuesCreateCommentParams): Promise<void> => {
+export const addComment = async (
+  client: Octokit,
+  comment: RestEndpointMethodTypes['issues']['createComment']['parameters']
+): Promise<void> => {
   try {
     await client.issues.createComment(comment);
   } catch (error) {
-    core.setFailed(error.message);
+    if (error instanceof Error && error?.message) {
+      core.setFailed(error.message);
+    }
   }
 };
 

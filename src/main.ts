@@ -1,6 +1,7 @@
 import * as core from '@actions/core';
 import * as github from '@actions/github';
-import { PullsUpdateParams, IssuesCreateCommentParams } from '@octokit/rest';
+// import { PullsUpdateParams, IssuesCreateCommentParams } from '@octokit/rest';
+import { Octokit } from '@octokit/action';
 
 import {
   addComment,
@@ -19,9 +20,9 @@ import {
   updatePrDetails,
   isIssueStatusValid,
   getInvalidIssueStatusComment,
-} from './utils';
-import { PullRequestParams, JIRADetails, JIRALintActionInputs } from './types';
-import { DEFAULT_PR_ADDITIONS_THRESHOLD } from './constants';
+} from './utils.js';
+import { PullRequestParams, JIRADetails, JIRALintActionInputs } from './types.js';
+import { DEFAULT_PR_ADDITIONS_THRESHOLD } from './constants.js';
 
 const getInputs = (): JIRALintActionInputs => {
   const JIRA_TOKEN: string = core.getInput('jira-token', { required: true });
@@ -50,7 +51,6 @@ async function run(): Promise<void> {
     const {
       JIRA_TOKEN,
       JIRA_BASE_URL,
-      GITHUB_TOKEN,
       BRANCH_IGNORE_PATTERN,
       SKIP_COMMENTS,
       PR_THRESHOLD,
@@ -92,11 +92,11 @@ async function run(): Promise<void> {
     };
 
     // github client with given token
-    const client: github.GitHub = new github.GitHub(GITHUB_TOKEN);
+    const client = new Octokit();
 
     if (!headBranch && !baseBranch) {
       const commentBody = 'jira-lint is unable to determine the head and base branch';
-      const comment: IssuesCreateCommentParams = {
+      const comment = {
         ...commonPayload,
         body: commentBody,
       };
@@ -115,7 +115,7 @@ async function run(): Promise<void> {
 
     const issueKeys = getJIRAIssueKeys(headBranch);
     if (!issueKeys.length) {
-      const comment: IssuesCreateCommentParams = {
+      const comment = {
         ...commonPayload,
         body: getNoIdComment(headBranch),
       };
@@ -144,7 +144,7 @@ async function run(): Promise<void> {
       });
 
       if (!isIssueStatusValid(VALIDATE_ISSUE_STATUS, ALLOWED_ISSUE_STATUSES.split(','), details)) {
-        const invalidIssueStatusComment: IssuesCreateCommentParams = {
+        const invalidIssueStatusComment = {
           ...commonPayload,
           body: getInvalidIssueStatusComment(details.status, ALLOWED_ISSUE_STATUSES),
         };
@@ -156,7 +156,7 @@ async function run(): Promise<void> {
       }
 
       if (shouldUpdatePRDescription(prBody)) {
-        const prData: PullsUpdateParams = {
+        const prData = {
           owner,
           repo,
           pull_number: prNumber,
@@ -166,7 +166,7 @@ async function run(): Promise<void> {
 
         // add comment for PR title
         if (!SKIP_COMMENTS) {
-          const prTitleComment: IssuesCreateCommentParams = {
+          const prTitleComment = {
             ...commonPayload,
             body: getPRTitleComment(details.summary, title),
           };
@@ -175,7 +175,7 @@ async function run(): Promise<void> {
 
           // add a comment if the PR is huge
           if (isHumongousPR(additions, prThreshold)) {
-            const hugePrComment: IssuesCreateCommentParams = {
+            const hugePrComment = {
               ...commonPayload,
               body: getHugePrComment(additions, prThreshold),
             };
@@ -185,7 +185,7 @@ async function run(): Promise<void> {
         }
       }
     } else {
-      const comment: IssuesCreateCommentParams = {
+      const comment = {
         ...commonPayload,
         body: getNoIdComment(headBranch),
       };
@@ -196,7 +196,11 @@ async function run(): Promise<void> {
     }
   } catch (error) {
     console.log({ error });
-    core.setFailed(error.message);
+    if (error instanceof Error) {
+      core.setFailed(error.message);
+    } else {
+      core.setFailed('An error occurred while running the action.');
+    }
     process.exit(1);
   }
 }
